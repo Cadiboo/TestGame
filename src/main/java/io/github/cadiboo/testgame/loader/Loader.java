@@ -1,20 +1,20 @@
 package io.github.cadiboo.testgame.loader;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 /**
  * @author Cadiboo
  */
 public final class Loader {
 
-	private static final ArrayList<LoadEntry> entries = new ArrayList<>();
+	private static final LinkedList<LoadEntry> entries = new LinkedList<>();
 	private static int currentIndex = 0;
 	static {
 		LoadIndex.init();
 	}
 
 	public static boolean canLoad(final LoadEntry loadEntry) {
-		return loadEntry.index <= currentIndex;
+		return entries.indexOf(loadEntry) <= currentIndex;
 	}
 
 	public static void load() {
@@ -23,8 +23,8 @@ public final class Loader {
 		}
 	}
 
-	public static LoadEntry add(Runnable onLoad) {
-		final LoadEntry loadEntry = new LoadEntry(entries.size(), onLoad);
+	public static LoadEntry add(final String name, Runnable onLoad) {
+		final LoadEntry loadEntry = new LoadEntry(name, onLoad);
 		entries.add(loadEntry);
 		return loadEntry;
 	}
@@ -34,7 +34,7 @@ public final class Loader {
 		try {
 			loadEntry.onLoad.run();
 		} catch (Exception e) {
-			throw new RuntimeException("Caught exception from " + loadEntry + " at index " + currentIndex, e);
+			throw new RuntimeException("Caught exception from " + loadEntry + " (\"" + loadEntry.name + "\") at index " + currentIndex, e);
 		}
 		++currentIndex;
 	}
@@ -44,11 +44,11 @@ public final class Loader {
 	 */
 	static class LoadEntry {
 
-		final int index;
 		final Runnable onLoad;
+		private final String name;
 
-		public LoadEntry(final int index, final Runnable onLoad) {
-			this.index = index;
+		public LoadEntry(final String name, final Runnable onLoad) {
+			this.name = name;
 			this.onLoad = onLoad;
 		}
 

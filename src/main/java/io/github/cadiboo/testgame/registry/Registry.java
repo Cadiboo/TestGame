@@ -2,6 +2,7 @@ package io.github.cadiboo.testgame.registry;
 
 import io.github.cadiboo.testgame.TestGame;
 import io.github.cadiboo.testgame.event.registry.RegisterEvent;
+import io.github.cadiboo.testgame.event.registry.RegistryLoadedEvent;
 import io.github.cadiboo.testgame.util.Location;
 
 import java.util.ArrayList;
@@ -18,7 +19,7 @@ public class Registry<T extends RegistryEntry> {
 
 	public final boolean supportsReplacement;
 	public final boolean reloadable;
-	private final Location registryName;
+	public final Location registryName;
 	private final LinkedHashMap<Location, T> entries = new LinkedHashMap<>();
 	private final HashMap<Location, List<RegistrySupplier<T>>> suppliers = new HashMap<>();
 	private final Class<T> type;
@@ -30,10 +31,6 @@ public class Registry<T extends RegistryEntry> {
 		this.supportsReplacement = supportsReplacement;
 		this.reloadable = reloadable;
 		this.type = type;
-	}
-
-	public final RegisterEvent<T> createEvent() {
-		return new RegisterEvent<>(this, this.type);
 	}
 
 	public void registerAll(final T... entries) {
@@ -53,7 +50,7 @@ public class Registry<T extends RegistryEntry> {
 		final T oldValue = entries.put(registryName, entry);
 		if (oldValue != null && !supportsReplacement) {
 			entries.put(registryName, oldValue);
-			throw new IllegalStateException();
+			throw new IllegalStateException("Registry does not support replacement");
 		}
 		final List<RegistrySupplier<T>> registrySuppliers = suppliers.get(registryName);
 		if (registrySuppliers != null)
@@ -106,8 +103,9 @@ public class Registry<T extends RegistryEntry> {
 	public void load() {
 		fillSuppliers();
 		unlock();
-		TestGame.EVENT_BUS.post(createEvent());
+		TestGame.EVENT_BUS.post(new RegisterEvent<>(this, this.type));
 		lock();
+		TestGame.EVENT_BUS.post(new RegistryLoadedEvent<>(this, this.type));
 	}
 
 }

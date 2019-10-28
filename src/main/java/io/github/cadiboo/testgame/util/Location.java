@@ -11,12 +11,16 @@ public class Location {
 	private final String path;
 
 	private Location(final String domain, final String path) {
-		this.domain = Objects.requireNonNull(domain, "domain cannot be null!");
-		this.path = Objects.requireNonNull(path, "path cannot be null!");
+		this.domain = Objects.requireNonNull(domain, "domain cannot be null!").toLowerCase();
+		this.path = Objects.requireNonNull(path, "path cannot be null!").toLowerCase();
 	}
 
 	public static Location of(final String location) {
-		return new Location("testgame", location);
+		return of("testgame", location);
+	}
+
+	public static Location of(final String domain, final String path) {
+		return new Location(domain, path);
 	}
 
 	public String getDomain() {

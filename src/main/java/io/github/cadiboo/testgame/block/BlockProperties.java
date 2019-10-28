@@ -8,12 +8,14 @@ public class BlockProperties {
 	int hardness = -1;
 	int conductivity = -1;
 
-	public void setHardness(final int newValue) {
+	public BlockProperties setHardness(final int newValue) {
 		this.hardness = newValue;
+		return this;
 	}
 
-	public void setConductivity(final int newValue) {
+	public BlockProperties setConductivity(final int newValue) {
 		this.conductivity = newValue;
+		return this;
 	}
 
 }

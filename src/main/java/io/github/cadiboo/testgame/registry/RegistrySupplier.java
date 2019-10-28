@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * @author Cadiboo
@@ -15,9 +14,9 @@ import java.util.function.Supplier;
 public abstract class RegistrySupplier<T extends RegistryEntry> {
 
 	static final HashMap<Location, List<RegistrySupplier>> SUPPLIERS = new HashMap<>();
-	 private static final Function<Object, List<RegistrySupplier>> MAKE_ARRAY_LIST = k -> new ArrayList<>();
+	private static final Function<Object, List<RegistrySupplier>> MAKE_ARRAY_LIST = k -> new ArrayList<>();
 
-	final Location registryName;
+	public final Location registryName;
 	T cached = null;
 
 	public RegistrySupplier(Location registryName, Location registryRegistryName) {

@@ -11,20 +11,24 @@ import static io.github.cadiboo.testgame.loader.Loader.add;
  */
 public interface LoadIndex {
 
-	Loader.LoadEntry LOAD_MODS = add(ModLoader::init);
+	Loader.LoadEntry START = add("Start", () -> System.out.println("Starting game..."));
 
-	Loader.LoadEntry REGISTER_LISTENERS = add(TestGame::init);
+	Loader.LoadEntry REGISTER_LISTENERS = add("Register Listeners", TestGame::registerListeners);
 
-	Loader.LoadEntry CREATE_REGISTRIES = add(() -> Registries.get(null));
+	Loader.LoadEntry LOAD_MODS = add("Load Mods", ModLoader::findAndLoadMods);
 
-	Loader.LoadEntry REGISTER_OBJECTS = add(() -> Registries.forEach((location, registry) -> registry.load()));
+	Loader.LoadEntry CREATE_REGISTRIES = add("Create Registries", () -> Registries.get(null));
 
-	Loader.LoadEntry RELOAD_REGISTRIES = add(() -> Registries.forEach((location, registry) -> registry.reload()));
+	Loader.LoadEntry REGISTER_REGISTRY_ENTRIES = add("Register Registry Entries", () -> Registries.forEach((location, registry) -> registry.load()));
 
-	Loader.LoadEntry RELOAD_REGISTRIES_AGAIN = add(() -> Registries.forEach((location, registry) -> registry.reload()));
+	Loader.LoadEntry RELOAD_REGISTRIES = add("Reload Registries", () -> Registries.forEach((location, registry) -> registry.reload()));
+
+	Loader.LoadEntry RELOAD_REGISTRIES_AGAIN = add("Reload Registries Again", () -> Registries.forEach((location, registry) -> registry.reload()));
+
+	Loader.LoadEntry END = add("End", () -> System.out.println("Finished loading game..."));
 
 	static void init() {
-
+		// Yay, static initialisers
 	}
 
 }

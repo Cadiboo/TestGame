@@ -11,7 +11,7 @@ public class GenericEvent<T> extends Event {
 		this.type = null;
 	}
 
-	protected GenericEvent(Class<T> type) {
+	public GenericEvent(Class<T> type) {
 		this.type = type;
 	}
 

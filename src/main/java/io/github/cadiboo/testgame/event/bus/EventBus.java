@@ -3,13 +3,14 @@ package io.github.cadiboo.testgame.event.bus;
 import io.github.cadiboo.testgame.event.Event;
 import io.github.cadiboo.testgame.event.GenericEvent;
 import io.github.cadiboo.testgame.event.pooled.PooledEvent;
-import io.github.cadiboo.testgame.util.TypeResolver;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.function.Function;
+
+import static io.github.cadiboo.testgame.util.TypeResolver.resolveRawArgument;
 
 /**
  * @author Cadiboo
@@ -22,14 +23,20 @@ public class EventBus {
 	private HashMap<Class<? extends Event>, List<EventListener>> listeners = new HashMap<>();
 
 	protected static <T extends Event> Class<T> getEventClass(final EventListener<T> listener) {
-		@SuppressWarnings("unchecked") final Class<T> eventClass = (Class<T>) TypeResolver.resolveRawArgument(EventListener.class, listener.getClass());
+		@SuppressWarnings("unchecked") final Class<T> eventClass = (Class<T>) resolveRawArgument(EventListener.class, listener.getClass());
+		if (Object.class.equals(eventClass)) // How is this possible
+			throw new IllegalStateException(eventClass.getName());
 		EVENT_LOOKUP.put(listener, eventClass);
 		return eventClass;
 	}
 
 	public void post(final Event event) {
 		for (final EventListener listener : getListeners(event)) {
-			listener.accept(event);
+			try {
+				listener.accept(event);
+			} catch (Exception e) {
+				throw new RuntimeException("Exception posting event \"" + event + "\" for listener \"" + listener + "\"");
+			}
 		}
 	}
 

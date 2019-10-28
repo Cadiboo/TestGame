@@ -1,26 +1,21 @@
 package io.github.cadiboo.testgame.block;
 
-import io.github.cadiboo.testgame.registry.RegistryEntry;
+import io.github.cadiboo.testgame.blockentity.BlockEntity;
+import io.github.cadiboo.testgame.registry.RegistryEntryImpl;
 import io.github.cadiboo.testgame.util.Location;
 
 /**
  * @author Cadiboo
  */
-public class Block implements RegistryEntry<Block> {
+public class Block extends RegistryEntryImpl<Block> {
 
-	private final Location registryName;
 	private final int hardness;
 	private final int conductivity;
 
 	public Block(final Location registryName, BlockProperties properties) {
-		this.registryName = registryName;
+		super(registryName);
 		this.hardness = properties.hardness;
 		this.conductivity = properties.conductivity;
-	}
-
-	@Override
-	public final Location getRegistryName() {
-		return registryName;
 	}
 
 	public int getHardness() {
@@ -29,6 +24,14 @@ public class Block implements RegistryEntry<Block> {
 
 	public int getConductivity() {
 		return conductivity;
+	}
+
+	public boolean hasBlockEntity() {
+		return false;
+	}
+
+	public BlockEntity createBlockEntity() {
+		return null;
 	}
 
 }

@@ -7,8 +7,9 @@ public class ItemProperties {
 
 	int maxStackSize = 64;
 
-	public void setMaxStackSize(final int newValue) {
+	public ItemProperties setMaxStackSize(final int newValue) {
 		this.maxStackSize = newValue;
+		return this;
 	}
 
 }

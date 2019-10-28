@@ -2,7 +2,7 @@ package io.github.cadiboo.testgame.client;
 
 import io.github.cadiboo.testgame.TestGame;
 import io.github.cadiboo.testgame.block.Block;
-import io.github.cadiboo.testgame.registry.Registries;
+import io.github.cadiboo.testgame.event.Event;
 import io.github.cadiboo.testgame.registry.supplier.BlockSupplier;
 import io.github.cadiboo.testgame.util.Location;
 
@@ -12,13 +12,11 @@ public final class Main {
 
 	public static void main(String... args) {
 		long startTime = System.nanoTime();
-		TestGame.EVENT_BUS.register(event -> System.out.println(event.toString()));
-		Registries.forEach((location, registry) -> {
-			System.out.println("Registry " + location);
-			registry.forEach((entryLocation, entry) -> {
-				System.out.println(entryLocation + " | " + entry.getRegistryName());
-			});
+		TestGame.EVENT_BUS.register(event -> {
+			System.out.println("Base event fired!");
+			System.out.println(event.toString());
 		});
+		TestGame.EVENT_BUS.post(new Event());
 		System.out.println(TEST_BLOCK.get().getHardness());
 		long endTime = System.nanoTime();
 		System.out.println("Time Elapsed: " + (endTime - startTime));
