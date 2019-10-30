@@ -16,7 +16,7 @@ public class BlockSupplier<T extends Block> extends RegistrySupplier<T> {
 	}
 
 	public static <T extends Block> BlockSupplier<T> of(Location registryName) {
-		return new BlockSupplier<>(registryName, Location.of("blocks"));
+		return new BlockSupplier<>(registryName, Location.of("block"));
 	}
 
 	@Override

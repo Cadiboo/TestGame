@@ -1,6 +1,6 @@
 package io.github.cadiboo.testgame.blockentity;
 
-import io.github.cadiboo.testgame.registry.RegistryEntryImpl;
+import io.github.cadiboo.testgame.registry.RegistryEntry;
 import io.github.cadiboo.testgame.util.Location;
 import io.github.cadiboo.testgame.util.math.Pos;
 import io.github.cadiboo.testgame.world.World;
@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 /**
  * @author Cadiboo
  */
-public class BlockEntityType<T extends BlockEntity> extends RegistryEntryImpl<BlockEntityType> {
+public class BlockEntityType<T extends BlockEntity> extends RegistryEntry<BlockEntityType> {
 
 	private final BiFunction<World, Pos, T> factory;
 

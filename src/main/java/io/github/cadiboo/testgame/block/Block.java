@@ -1,13 +1,13 @@
 package io.github.cadiboo.testgame.block;
 
 import io.github.cadiboo.testgame.blockentity.BlockEntity;
-import io.github.cadiboo.testgame.registry.RegistryEntryImpl;
+import io.github.cadiboo.testgame.registry.RegistryEntry;
 import io.github.cadiboo.testgame.util.Location;
 
 /**
  * @author Cadiboo
  */
-public class Block extends RegistryEntryImpl<Block> {
+public class Block extends RegistryEntry<Block> {
 
 	private final int hardness;
 	private final int conductivity;

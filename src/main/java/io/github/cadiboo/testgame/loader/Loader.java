@@ -8,6 +8,11 @@ import java.util.LinkedList;
 public final class Loader {
 
 	private static final LinkedList<LoadEntry> entries = new LinkedList<>();
+
+	public static int getCurrentIndex() {
+		return currentIndex;
+	}
+
 	private static int currentIndex = 0;
 	static {
 		LoadIndex.init();
@@ -18,9 +23,13 @@ public final class Loader {
 	}
 
 	public static void load() {
-		while (currentIndex < entries.size()) {
+		while (getCurrentIndex() < getSize()) {
 			loadNext();
 		}
+	}
+
+	public static int getSize() {
+		return entries.size();
 	}
 
 	public static LoadEntry add(final String name, Runnable onLoad) {
@@ -30,7 +39,7 @@ public final class Loader {
 	}
 
 	private static void loadNext() {
-		final LoadEntry loadEntry = entries.get(currentIndex);
+		final LoadEntry loadEntry = getCurrentEntry();
 		try {
 			loadEntry.onLoad.run();
 		} catch (Exception e) {
@@ -39,13 +48,17 @@ public final class Loader {
 		++currentIndex;
 	}
 
+	public static LoadEntry getCurrentEntry() {
+		return entries.get(currentIndex);
+	}
+
 	/**
 	 * @author Cadiboo
 	 */
-	static class LoadEntry {
+	public static class LoadEntry {
 
 		final Runnable onLoad;
-		private final String name;
+		public final String name;
 
 		public LoadEntry(final String name, final Runnable onLoad) {
 			this.name = name;

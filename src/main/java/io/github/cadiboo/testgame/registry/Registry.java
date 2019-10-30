@@ -23,7 +23,7 @@ public class Registry<T extends RegistryEntry> {
 	private final LinkedHashMap<Location, T> entries = new LinkedHashMap<>();
 	private final HashMap<Location, List<RegistrySupplier<T>>> suppliers = new HashMap<>();
 	private final Class<T> type;
-
+	private RegistryEntry[] ids = null;
 	private boolean locked;
 
 	public Registry(final Location registryName, final boolean supportsReplacement, final boolean reloadable, final Class<T> type) {
@@ -39,7 +39,7 @@ public class Registry<T extends RegistryEntry> {
 		}
 	}
 
-	private void register(final T entry) {
+	public void register(final T entry) {
 		if (locked)
 			throw new IllegalStateException("Registry is locked!");
 		if (entry == null)
@@ -47,11 +47,16 @@ public class Registry<T extends RegistryEntry> {
 		final Location registryName = entry.getRegistryName();
 		if (registryName == null)
 			throw new NullPointerException("registryName of entry (\"" + entry.getClass().getName() + "\") to register cannot be null!");
+
 		final T oldValue = entries.put(registryName, entry);
-		if (oldValue != null && !supportsReplacement) {
-			entries.put(registryName, oldValue);
-			throw new IllegalStateException("Registry does not support replacement");
-		}
+		if (oldValue != null)
+			if (!supportsReplacement) {
+				entries.put(registryName, oldValue);
+				throw new IllegalStateException("Registry does not support replacement");
+			} else
+				entry.setId(oldValue.getId());
+		else
+			entry.setId(entries.size() - 1);
 		final List<RegistrySupplier<T>> registrySuppliers = suppliers.get(registryName);
 		if (registrySuppliers != null)
 			for (final RegistrySupplier<T> supplier : registrySuppliers) {
@@ -61,17 +66,23 @@ public class Registry<T extends RegistryEntry> {
 
 	public void reload() {
 		if (!this.reloadable)
-			throw new IllegalStateException();
+			throw new IllegalStateException("Reload called on a non-reloadable registry!");
 		entries.clear();
 		load();
 	}
 
 	void unlock() {
 		locked = false;
+		ids = null;
 	}
 
 	public void lock() {
 		locked = true;
+		ids = new RegistryEntry[entries.size()];
+		int i = 0;
+		for (final T entry : entries.values()) {
+			ids[i++] = entry;
+		}
 	}
 
 	public void forEach(BiConsumer<Location, T> action) {
@@ -86,12 +97,16 @@ public class Registry<T extends RegistryEntry> {
 		return entries.get(registryName);
 	}
 
+	public T get(char id) {
+		return (T) ids[id];
+	}
+
 	public boolean isLocked() {
 		return locked;
 	}
 
 	public void fillSuppliers() {
-		final List<RegistrySupplier> suppliersForMe = RegistrySupplier.SUPPLIERS.get(this.registryName);
+		final List<RegistrySupplier> suppliersForMe = RegistrySupplier.SUPPLIERS.remove(this.registryName);
 		if (suppliersForMe == null || suppliersForMe.isEmpty()) {
 			return;
 		}
@@ -106,6 +121,10 @@ public class Registry<T extends RegistryEntry> {
 		TestGame.EVENT_BUS.post(new RegisterEvent<>(this, this.type));
 		lock();
 		TestGame.EVENT_BUS.post(new RegistryLoadedEvent<>(this, this.type));
+	}
+
+	public int size() {
+		return entries.size();
 	}
 
 }

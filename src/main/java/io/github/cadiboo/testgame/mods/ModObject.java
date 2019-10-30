@@ -3,7 +3,7 @@ package io.github.cadiboo.testgame.mods;
 /**
  * @author Cadiboo
  */
-public final class ModObject {
+public class ModObject {
 
 	public final Object instance;
 	public final String modId;

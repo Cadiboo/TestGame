@@ -88,4 +88,11 @@ public final class ModLoader {
 		}
 	}
 
+	public static Object getMod(String modId) {
+		final ModObject modObject = MODS.get(modId);
+		if (modObject == null)
+			return null;
+		return modObject.instance;
+	}
+
 }

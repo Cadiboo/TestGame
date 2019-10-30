@@ -5,6 +5,7 @@ import io.github.cadiboo.testgame.block.Block;
 import io.github.cadiboo.testgame.blockentity.BlockEntityType;
 import io.github.cadiboo.testgame.entity.EntityType;
 import io.github.cadiboo.testgame.event.registry.RegistryPropertiesEvent;
+import io.github.cadiboo.testgame.fluid.Fluid;
 import io.github.cadiboo.testgame.item.Item;
 import io.github.cadiboo.testgame.loader.LoadIndex;
 import io.github.cadiboo.testgame.loader.Loader;
@@ -21,6 +22,7 @@ public class Registries {
 
 	public static final Registry<Block> BLOCKS;
 	public static final Registry<Item> ITEMS;
+	public static final Registry<Fluid> FLUIDS;
 	public static final Registry<BlockEntityType> BLOCK_ENTITY_TYPES;
 	public static final Registry<EntityType> ENTITY_TYPES;
 
@@ -34,10 +36,11 @@ public class Registries {
 			throw new IllegalStateException();
 		REGISTRY_LIST = new LinkedHashMap<>();
 		final RegistryProperties properties = getRegistryProperties();
-		BLOCKS = createRegistry(Location.of("blocks"), properties, Block.class);
-		ITEMS = createRegistry(Location.of("items"), properties, Item.class);
-		BLOCK_ENTITY_TYPES = createRegistry(Location.of("block_entities"), properties, BlockEntityType.class);
-		ENTITY_TYPES = createRegistry(Location.of("entity_types"), properties, EntityType.class);
+		BLOCKS = createRegistry(Location.of("block"), properties, Block.class);
+		ITEMS = createRegistry(Location.of("item"), properties, Item.class);
+		FLUIDS = createRegistry(Location.of("fluid"), properties, Fluid.class);
+		BLOCK_ENTITY_TYPES = createRegistry(Location.of("block_entity_type"), properties, BlockEntityType.class);
+		ENTITY_TYPES = createRegistry(Location.of("entity_type"), properties, EntityType.class);
 	}
 
 	private static RegistryProperties getRegistryProperties() {

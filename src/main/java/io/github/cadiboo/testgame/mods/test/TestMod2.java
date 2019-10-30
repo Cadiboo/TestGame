@@ -15,16 +15,16 @@ public final class TestMod2 {
 	public static final String MOD_ID = "second_test_mod";
 
 	public TestMod2() {
-		debug(MOD_ID + ": Mod Initialised");
-		TestGame.EVENT_BUS.register((RegistryLoadedEvent<RegistryEntry<?>> event) -> {
-			final Registry<?> registry = event.getRegistry();
-			debug("Registry \"" + registry.registryName + "\" loaded");
-			registry.forEach((entryLocation, entry) -> {
-				debug("  " + entryLocation + " = " + entry);
-			});
-			debug("");
-		});
-		debug(MOD_ID + ": Added registry load event");
+//		debug(MOD_ID + ": Mod Initialised");
+//		TestGame.EVENT_BUS.register((RegistryLoadedEvent<RegistryEntry<?>> event) -> {
+//			final Registry<?> registry = event.getRegistry();
+//			debug("Registry \"" + registry.registryName + "\" loaded");
+//			registry.forEach((entryLocation, entry) -> {
+//				debug("  " + entryLocation + " = " + entry);
+//			});
+//			debug("");
+//		});
+//		debug(MOD_ID + ": Added registry load event");
 	}
 
 	private void debug(Object... msgs) {

@@ -1,5 +1,7 @@
 package io.github.cadiboo.testgame.util;
 
+import io.github.cadiboo.testgame.TestGame;
+
 import java.util.Objects;
 
 /**
@@ -16,7 +18,7 @@ public class Location {
 	}
 
 	public static Location of(final String location) {
-		return of("testgame", location);
+		return of(TestGame.DOMAIN, location);
 	}
 
 	public static Location of(final String domain, final String path) {
