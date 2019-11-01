@@ -13,7 +13,7 @@ import java.util.stream.IntStream;
 /**
  * @author Cadiboo
  */
-@Mod(TestMod3.MOD_ID)
+@Mod(value = TestMod3.MOD_ID, loadAfter = {TestMod1.MOD_ID, TestMod2.MOD_ID})
 public final class TestMod3 {
 
 	public static final String MOD_ID = "register_blocks_test_mod";

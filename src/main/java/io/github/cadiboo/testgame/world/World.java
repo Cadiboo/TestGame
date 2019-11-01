@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * A world holds entities, blocks, fluids and blockentities and processes the interactions between them.
+ *
  * @author Cadiboo
  */
 public class World {

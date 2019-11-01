@@ -1,8 +1,10 @@
 package io.github.cadiboo.testgame.block;
 
-import io.github.cadiboo.testgame.blockentity.BlockEntity;
+import io.github.cadiboo.testgame.blockentity.BlockEntityType;
 import io.github.cadiboo.testgame.registry.RegistryEntry;
 import io.github.cadiboo.testgame.util.Location;
+import io.github.cadiboo.testgame.util.math.Pos;
+import io.github.cadiboo.testgame.world.World;
 
 /**
  * @author Cadiboo
@@ -30,7 +32,7 @@ public class Block extends RegistryEntry<Block> {
 		return false;
 	}
 
-	public BlockEntity createBlockEntity() {
+	public BlockEntityType<?> getBlockEntityType(final World world, final Pos pos) {
 		return null;
 	}
 

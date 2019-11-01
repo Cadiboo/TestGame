@@ -11,12 +11,14 @@ import io.github.cadiboo.testgame.util.Location;
  */
 public class BlockSupplier<T extends Block> extends RegistrySupplier<T> {
 
+	public static final Location REGISTRY = Location.of("block");
+
 	private BlockSupplier(final Location registryName, final Location registryRegistryName) {
 		super(registryName, registryRegistryName);
 	}
 
 	public static <T extends Block> BlockSupplier<T> of(Location registryName) {
-		return new BlockSupplier<>(registryName, Location.of("block"));
+		return new BlockSupplier<>(registryName, REGISTRY);
 	}
 
 	@Override

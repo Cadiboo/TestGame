@@ -11,7 +11,7 @@ import io.github.cadiboo.testgame.util.Location;
 /**
  * @author Cadiboo
  */
-@Mod(TestMod1.MOD_ID)
+@Mod(value = TestMod1.MOD_ID, loadBefore = {TestMod2.MOD_ID, TestMod3.MOD_ID})
 public final class TestMod1 {
 
 	public static final String MOD_ID = "testmod1";

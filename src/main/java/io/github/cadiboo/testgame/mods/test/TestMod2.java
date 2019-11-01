@@ -1,15 +1,11 @@
 package io.github.cadiboo.testgame.mods.test;
 
-import io.github.cadiboo.testgame.TestGame;
-import io.github.cadiboo.testgame.event.registry.RegistryLoadedEvent;
 import io.github.cadiboo.testgame.mods.api.Mod;
-import io.github.cadiboo.testgame.registry.Registry;
-import io.github.cadiboo.testgame.registry.RegistryEntry;
 
 /**
  * @author Cadiboo
  */
-@Mod(TestMod2.MOD_ID)
+@Mod(value = TestMod2.MOD_ID, loadBefore = {"this_mod_doesnt_actually_exist", TestMod3.MOD_ID}, loadAfter = TestMod1.MOD_ID)
 public final class TestMod2 {
 
 	public static final String MOD_ID = "second_test_mod";

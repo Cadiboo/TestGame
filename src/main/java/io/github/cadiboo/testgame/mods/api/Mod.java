@@ -12,6 +12,10 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Mod {
 
-	String[] value();
+	String value();
+
+	String[] loadBefore() default {};
+
+	String[] loadAfter() default {};
 
 }

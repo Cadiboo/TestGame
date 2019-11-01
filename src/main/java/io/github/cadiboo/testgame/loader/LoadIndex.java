@@ -11,23 +11,42 @@ import static io.github.cadiboo.testgame.loader.Loader.add;
  */
 public interface LoadIndex {
 
-	Loader.LoadEntry START = add("Start", () -> System.out.println("Starting game..."));
+	LoadPhase REGISTER_LISTENERS = add(new LoadPhase.Builder("register_listeners")
+			.onRun(TestGame::registerListeners)
+			.runBefore("load_mods")
+			.build()
+	);
 
-	Loader.LoadEntry REGISTER_LISTENERS = add("Register Listeners", TestGame::registerListeners);
+	LoadPhase LOAD_MODS = add(new LoadPhase.Builder("load_mods")
+			.onRun(ModLoader::findAndLoadMods)
+			.runBefore("create_registries")
+			.build()
+	);
 
-	Loader.LoadEntry LOAD_MODS = add("Load Mods", ModLoader::findAndLoadMods);
+	LoadPhase CREATE_REGISTRIES = add(new LoadPhase.Builder("create_registries")
+			.onRun(() -> Registries.get(null))
+			.runBefore("register_registry_entries")
+			.build()
+	);
 
-	Loader.LoadEntry CREATE_REGISTRIES = add("Create Registries", () -> Registries.get(null));
+	LoadPhase REGISTER_REGISTRY_ENTRIES = add(new LoadPhase.Builder("register_registry_entries")
+			.onRun(() -> Registries.forEach((location, registry) -> registry.load()))
+			.runBefore("reload_registries")
+			.build()
+	);
 
-	Loader.LoadEntry REGISTER_REGISTRY_ENTRIES = add("Register Registry Entries", () -> Registries.forEach((location, registry) -> registry.load()));
+	LoadPhase RELOAD_REGISTRIES = add(new LoadPhase.Builder("reload_registries")
+			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.runBefore("reload_registries_again")
+			.build()
+	);
 
-	Loader.LoadEntry RELOAD_REGISTRIES = add("Reload Registries", () -> Registries.forEach((location, registry) -> registry.reload()));
+	LoadPhase RELOAD_REGISTRIES_AGAIN = add(new LoadPhase.Builder("reload_registries_again")
+			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.build()
+	);
 
-	Loader.LoadEntry RELOAD_REGISTRIES_AGAIN = add("Reload Registries Again", () -> Registries.forEach((location, registry) -> registry.reload()));
-
-	Loader.LoadEntry END = add("End", () -> System.out.println("Finished loading game..."));
-
-	static void init() {
+	static void touch() {
 		// Yay, static initialisers
 	}
 

@@ -2,7 +2,6 @@ package io.github.cadiboo.testgame.event.bus;
 
 import io.github.cadiboo.testgame.event.Event;
 import io.github.cadiboo.testgame.event.GenericEvent;
-import io.github.cadiboo.testgame.event.pooled.PooledEvent;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,15 +17,14 @@ import static io.github.cadiboo.testgame.util.TypeResolver.resolveRawArgument;
 public class EventBusImpl implements EventBus {
 
 	private static final Function<Class<? extends Event>, List<EventListener<?>>> MAKE_LISTENERS_LIST_FUNCTION = k -> new ArrayList<>();
-	private static final HashMap<EventListener<?>, Class<? extends Event>> EVENT_LOOKUP = new HashMap<>();
 
 	private HashMap<Class<? extends Event>, List<EventListener<?>>> listeners = new HashMap<>();
 
+	@SuppressWarnings("unchecked")
 	protected static <T extends Event> Class<T> getEventClass(final EventListener<T> listener) {
-		@SuppressWarnings("unchecked") final Class<T> eventClass = (Class<T>) resolveRawArgument(EventListener.class, listener.getClass());
+		final Class<T> eventClass = (Class<T>) resolveRawArgument(EventListener.class, listener.getClass());
 		if (!Event.class.isAssignableFrom(eventClass)) // How is this possible
 			throw new IllegalArgumentException(eventClass.getName() + " is not a subclass of Event. This should not be possible!");
-		EVENT_LOOKUP.put(listener, eventClass);
 		return eventClass;
 	}
 
@@ -42,11 +40,11 @@ public class EventBusImpl implements EventBus {
 	}
 
 	@Override
-	public <T extends PooledEvent> void post(final T pooledEvent) {
-		pooledEvent.reset();
-		post((Event) pooledEvent);
+	public <T extends Event> void register(final EventListener<T> listener) {
+		getOrCreateListenerList(listener).add(listener);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <G, T extends GenericEvent<G>> void registerGeneric(final Class<G> genericClass, final EventListener<T> listener) {
 		getOrCreateListenerList(listener).add(event -> {
@@ -55,12 +53,7 @@ public class EventBusImpl implements EventBus {
 		});
 	}
 
-	@Override
-	public <T extends Event> void register(final EventListener<T> listener) {
-		getOrCreateListenerList(listener).add(listener);
-	}
-
-	private <T extends Event> List<EventListener<?>> getListeners(final T event) {
+	protected <T extends Event> Iterable<EventListener<?>> getListeners(final T event) {
 		return listeners.getOrDefault(event.getClass(), Collections.emptyList());
 	}
 

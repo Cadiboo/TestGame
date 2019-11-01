@@ -21,6 +21,7 @@ public abstract class RegistrySupplier<T extends RegistryEntry> {
 
 	public RegistrySupplier(Location registryName, Location registryRegistryName) {
 		this.registryName = Objects.requireNonNull(registryName, "registryName cannot be null!");
+		Objects.requireNonNull(registryRegistryName, "registryName of registry cannot be null!");
 		final List<RegistrySupplier> registrySuppliers = SUPPLIERS.computeIfAbsent(registryRegistryName, MAKE_ARRAY_LIST);
 		registrySuppliers.add(this);
 	}

@@ -7,49 +7,64 @@ import io.github.cadiboo.testgame.init.Blocks;
 import io.github.cadiboo.testgame.registry.Registries;
 import io.github.cadiboo.testgame.registry.supplier.BlockSupplier;
 
-import java.awt.Color;
+import java.util.Arrays;
 
 /**
  * @author Cadiboo
  */
 public final class BlockColorHandler {
 
-	private static Color[] colors = null;
+	public static final int MISSING = 0xFF_FF_00_FF; // Magenta
+
+	private static int[] colors = null;
 
 	static {
 		TestGame.EVENT_BUS.register(BlockColorHandler::register);
 	}
 
 	public static void register(final BlockColorEvent event) {
-		addColor(Blocks.AIR, new Color(0, 0, 0, 0));
-//		addColor(Blocks.AIR, Color.WHITE);
-		addColor(Blocks.STONE, Color.DARK_GRAY);
-		addColor(Blocks.DIRT, new Color(70, 49, 33));
-		addColor(Blocks.TURF, new Color(0, 127, 0));
-		addColor(Blocks.GRASS, Color.GREEN);
-		addColor(Blocks.COAL_ORE, Color.BLACK);
-		addColor(Blocks.IRON_ORE, new Color(157, 112, 70));
-		addColor(Blocks.GOLD_ORE, Color.ORANGE);
-		addColor(Blocks.DIAMOND_ORE, Color.CYAN);
-		addColor(Blocks.EMERALD_ORE, Color.GREEN);
-		addColor(Blocks.REDSTONE_ORE, Color.RED);
+		addColor(Blocks.AIR, 0x00_00_00_00);
+		addColor(Blocks.STONE, 0xFF, 0x40, 0x40, 0x40);
+		addColor(Blocks.DIRT, 0xFF, 70, 49, 33);
+		addColor(Blocks.TURF, 0xFF, 0, 127, 0);
+		addColor(Blocks.GRASS, 0xFF, 0, 0xFF, 0);
+		addColor(Blocks.COAL_ORE, 0xFF, 0, 0, 0);
+		addColor(Blocks.IRON_ORE, 0xFF, 157, 112, 70);
+		addColor(Blocks.GOLD_ORE, 255, 200, 0);
+		addColor(Blocks.DIAMOND_ORE, 0, 255, 255);
+		addColor(Blocks.EMERALD_ORE, 0, 255, 0);
+		addColor(Blocks.REDSTONE_ORE, 255, 0, 0);
 	}
 
-	public static void addColor(BlockSupplier<?> blockSupplier, Color color) {
-		colors[blockSupplier.get().getId()] = color;
+	public static void addColor(BlockSupplier<?> supplier, int r, int g, int b) {
+		addColor(supplier, 0xFF, r, g, b);
+	}
+
+	public static void addColor(BlockSupplier<?> supplier, int a, int r, int g, int b) {
+		a = a & 0xFF;
+		r = r & 0xFF;
+		g = g & 0xFF;
+		b = b & 0xFF;
+		addColor(supplier,
+				a << 24 | r << 16 | g << 8 | b);
+	}
+
+	public static void addColor(BlockSupplier<?> supplier, int color) {
+		colors[supplier.get().getId()] = color;
 	}
 
 	public static void init() {
-		colors = new Color[Registries.BLOCKS.size()];
+		colors = new int[Registries.BLOCKS.size()];
+		Arrays.fill(colors, -1);
 		TestGame.EVENT_BUS.post(new BlockColorEvent());
 	}
 
-	public static Color getColor(final Block block) {
+	public static int getColor(final Block block) {
 		final char id = block.getId();
 		if (id > colors.length)
-			return Color.MAGENTA;
-		final Color color = colors[id];
-		return color == null ? Color.MAGENTA : color;
+			return MISSING;
+		final int color = colors[id];
+		return color == -1 ? MISSING : color;
 	}
 
 }

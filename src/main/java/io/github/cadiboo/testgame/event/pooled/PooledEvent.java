@@ -7,6 +7,10 @@ import io.github.cadiboo.testgame.event.Event;
  */
 public class PooledEvent extends Event {
 
+	/**
+	 * Reset any cached data here
+	 * This is called right before the event is posted
+	 */
 	public void reset() {
 	}
 

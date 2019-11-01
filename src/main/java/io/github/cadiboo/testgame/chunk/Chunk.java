@@ -6,16 +6,17 @@ import io.github.cadiboo.testgame.registry.Registries;
 import io.github.cadiboo.testgame.util.Utils;
 
 /**
+ * A chunk holds data about a cube of Blocks and Fluid
+ *
  * @author Cadiboo
  */
 public class Chunk {
 
-	// from 0-0xFF
-	public static final int AXIS_MAX = 0xF;
-	public static final int AXIS_SIZE = AXIS_MAX + 1;
-	public static final int SHIFT = Utils.countBits(AXIS_MAX);
-	public static final int SHIFT2 = SHIFT * 2;
-	public static final int SIZE = AXIS_SIZE * AXIS_SIZE * AXIS_SIZE;
+	public static final int AXIS_MAX = 0xF; // 15
+	public static final int AXIS_SIZE = AXIS_MAX + 1; // 16
+	public static final int SHIFT = Utils.countBits(AXIS_MAX); // 8
+	public static final int SHIFT2 = SHIFT * 2; // 16
+	public static final int SIZE = AXIS_SIZE * AXIS_SIZE * AXIS_SIZE; // 4096
 
 	public final long chunkX;
 	public final long chunkY;
@@ -25,8 +26,10 @@ public class Chunk {
 	private final char[] fluids;
 
 	private int modCount = 0;
+	private int blocksCount = 0;
+	private int fluidsCount = 0;
 
-	public Chunk(long chunkX, long chunkY, long chunkZ, final char[] blocks, final char[] fluids) {
+	private Chunk(long chunkX, long chunkY, long chunkZ, final char[] blocks, final char[] fluids, final boolean count) {
 		if (blocks.length != SIZE)
 			throw new IllegalArgumentException("Blocks array is not the right size");
 		if (fluids.length != SIZE)
@@ -36,10 +39,30 @@ public class Chunk {
 		this.chunkX = chunkX;
 		this.chunkY = chunkY;
 		this.chunkZ = chunkZ;
+		if (count) {
+			for (final char id : blocks) {
+				if (id != 0)
+					++blocksCount;
+			}
+			for (final char id : fluids) {
+				if (id != 0)
+					++fluidsCount;
+			}
+		}
 	}
 
+	/**
+	 * Makes a new chunk from existing data
+	 */
+	public Chunk(long chunkX, long chunkY, long chunkZ, final char[] blocks, final char[] fluids) {
+		this(chunkX, chunkY, chunkZ, blocks, fluids, true);
+	}
+
+	/**
+	 * Makes a new empty chunk
+	 */
 	public Chunk(long chunkX, long chunkY, long chunkZ) {
-		this(chunkX, chunkY, chunkZ, new char[SIZE], new char[SIZE]);
+		this(chunkX, chunkY, chunkZ, new char[SIZE], new char[SIZE], false);
 	}
 
 	public void setBlock(Block block, int x, int y, int z) {
@@ -86,14 +109,8 @@ public class Chunk {
 	}
 
 	private int getIndex(int x, int y, int z) {
-		// index is 0xZYX
-		final int z1 = z & AXIS_MAX;
-		final int y1 = y & AXIS_MAX;
-		final int x1 = x & AXIS_MAX;
-//		if (x != x1 || y != y1 || z != z1) {
-//			int fz = 0;
-//		}
-		final int index = z1 << SHIFT2 | y1 << SHIFT | x1;
+		// index is packed ZYX
+		final int index = (z & AXIS_MAX) << SHIFT2 | (y & AXIS_MAX) << SHIFT | x & AXIS_MAX;
 		if (index >= SIZE)
 			throw new ArrayIndexOutOfBoundsException("index=" + index + ", x=" + x + ", y=" + y + ", z=" + z);
 		return index;
@@ -101,6 +118,10 @@ public class Chunk {
 
 	public int getModCount() {
 		return modCount;
+	}
+
+	public boolean isEmpty() {
+		return blocksCount == 0 && fluidsCount == 0;
 	}
 
 }
