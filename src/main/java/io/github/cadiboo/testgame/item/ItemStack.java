@@ -5,7 +5,7 @@ import io.github.cadiboo.testgame.init.Items;
 /**
  * @author Cadiboo
  */
-public class ItemStack<T extends Item> {
+public class ItemStack<T extends Item> implements Cloneable {
 
 	public static final ItemStack<AirItem> EMPTY = new ItemStack<AirItem>(null, 0, 0) {
 		@Override
@@ -40,22 +40,12 @@ public class ItemStack<T extends Item> {
 		return size;
 	}
 
-	public void setSize(final int size) {
-		this.size = size;
-	}
-
 	public boolean isEmpty() {
 		return this == EMPTY || this.size < 1 || this.item == Items.AIR.get();
 	}
 
-	/**
-	 * @param grow How much to grow the size
-	 * @return How much the size grew by
-	 */
-	public int grow(int grow) {
-		int grown = Math.min(maxSize - size, grow);
-		size += grown;
-		return grown;
+	public int getMaxSize() {
+		return maxSize;
 	}
 
 	/**
@@ -66,13 +56,23 @@ public class ItemStack<T extends Item> {
 	}
 
 	/**
-	 * @param shrink How much to shrink the size
-	 * @return How much the size shrunk by
+	 * @param grow How much to grow the size
+	 * @return How much the size grew by
 	 */
-	public int shrink(int shrink) {
-		int shrunk = Math.min(size, shrink);
-		size += shrunk;
-		return shrunk;
+	public int grow(int grow) {
+		return grow(grow, false);
+	}
+
+	/**
+	 * @param grow     How much to grow the size
+	 * @param simulate If the stack should NOT be grown
+	 * @return How much the size grew by
+	 */
+	public int grow(int grow, boolean simulate) {
+		int grown = Math.min(maxSize - size, grow);
+		if (!simulate)
+			size += grown;
+		return grown;
 	}
 
 	/**
@@ -80,6 +80,57 @@ public class ItemStack<T extends Item> {
 	 */
 	public int shrink() {
 		return shrink(1);
+	}
+
+	/**
+	 * @param shrink How much to shrink the size
+	 * @return How much the size shrunk by
+	 */
+	public int shrink(int shrink) {
+		return shrink(shrink, false);
+	}
+
+	/**
+	 * @param shrink   How much to shrink the size
+	 * @param simulate If the stack should NOT be shrunk
+	 * @return How much the shrunk grew by
+	 */
+	public int shrink(int shrink, boolean simulate) {
+		int shrunk = Math.min(size, shrink);
+		size += shrunk;
+		return shrunk;
+	}
+
+	/**
+	 * @return The stack that couldn't be added (or empty if everything was added)
+	 */
+	public ItemStack<?> add(final ItemStack<?> other) {
+		if (other.isEmpty())
+			return EMPTY;
+		if (this.getItem() != other.getItem())
+			return other;
+		final int added = this.grow(other.getSize());
+		other.shrink(added);
+		return other.isEmpty() ? EMPTY : other;
+	}
+
+	public boolean canAddFully(final ItemStack<?> other) {
+		if (other.isEmpty())
+			return true;
+		if (this.getItem() != other.getItem())
+			return false;
+		final int otherSize = other.getSize();
+		return otherSize == this.grow(otherSize, true);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public ItemStack<T> clone() {
+		try {
+			return (ItemStack<T>) super.clone();
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

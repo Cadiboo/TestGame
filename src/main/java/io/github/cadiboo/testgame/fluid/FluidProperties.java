@@ -5,6 +5,7 @@ package io.github.cadiboo.testgame.fluid;
  */
 public class FluidProperties {
 
+	boolean isAir;
 	int flowRange = 0;
 	int flowSpeed = 0;
 	int mass = 0;
@@ -21,6 +22,11 @@ public class FluidProperties {
 
 	public FluidProperties setMass(final int newValue) {
 		this.mass = newValue;
+		return this;
+	}
+
+	public FluidProperties air() {
+		this.isAir = true;
 		return this;
 	}
 

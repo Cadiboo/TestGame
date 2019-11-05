@@ -1,9 +1,15 @@
 package io.github.cadiboo.testgame.chunk;
 
 import io.github.cadiboo.testgame.block.Block;
+import io.github.cadiboo.testgame.blockentity.BlockEntity;
+import io.github.cadiboo.testgame.entity.Entity;
 import io.github.cadiboo.testgame.fluid.Fluid;
 import io.github.cadiboo.testgame.registry.Registries;
+import io.github.cadiboo.testgame.registry.RegistryEntry;
 import io.github.cadiboo.testgame.util.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A chunk holds data about a cube of Blocks and Fluid
@@ -24,12 +30,16 @@ public class Chunk {
 
 	private final char[] blocks;
 	private final char[] fluids;
+	private final List<Entity> entities;
+	private final List<BlockEntity> blockEntities;
 
 	private int modCount = 0;
 	private int blocksCount = 0;
 	private int fluidsCount = 0;
+	private int entitiesCount = 0;
+	private int blockEntitiesCount = 0;
 
-	private Chunk(long chunkX, long chunkY, long chunkZ, final char[] blocks, final char[] fluids, final boolean count) {
+	private Chunk(long chunkX, long chunkY, long chunkZ, final char[] blocks, final char[] fluids, final boolean count, final List<Entity> entities, final List<BlockEntity> blockEntities) {
 		if (blocks.length != SIZE)
 			throw new IllegalArgumentException("Blocks array is not the right size");
 		if (fluids.length != SIZE)
@@ -39,6 +49,8 @@ public class Chunk {
 		this.chunkX = chunkX;
 		this.chunkY = chunkY;
 		this.chunkZ = chunkZ;
+		this.entities = entities;
+		this.blockEntities = blockEntities;
 		if (count) {
 			for (final char id : blocks) {
 				if (id != 0)
@@ -48,52 +60,89 @@ public class Chunk {
 				if (id != 0)
 					++fluidsCount;
 			}
+			entitiesCount = entities.size();
+			blockEntitiesCount = blockEntities.size();
 		}
 	}
 
 	/**
 	 * Makes a new chunk from existing data
 	 */
-	public Chunk(long chunkX, long chunkY, long chunkZ, final char[] blocks, final char[] fluids) {
-		this(chunkX, chunkY, chunkZ, blocks, fluids, true);
+	public Chunk(long chunkX, long chunkY, long chunkZ, final char[] blocks, final char[] fluids, final List<Entity> entities, final List<BlockEntity> blockEntities) {
+		this(chunkX, chunkY, chunkZ, blocks, fluids, true, entities, blockEntities);
 	}
 
 	/**
 	 * Makes a new empty chunk
 	 */
 	public Chunk(long chunkX, long chunkY, long chunkZ) {
-		this(chunkX, chunkY, chunkZ, new char[SIZE], new char[SIZE], false);
+		this(chunkX, chunkY, chunkZ, new char[SIZE], new char[SIZE], false, new ArrayList<>(), new ArrayList<>());
+	}
+
+	public List<Entity> getEntities() {
+		return entities;
+	}
+
+	public List<BlockEntity> getBlockEntities() {
+		return blockEntities;
 	}
 
 	public void setBlock(Block block, int x, int y, int z) {
-		set(blocks, block.getId(), x, y, z);
+		blocksCount += set(blocks, block.getId(), x, y, z);
 	}
 
 	public void setFluid(Fluid fluid, int x, int y, int z) {
-		set(fluids, fluid.getId(), x, y, z);
+		fluidsCount += set(fluids, fluid.getId(), x, y, z);
 	}
 
 	public void setBlocks(Block block, int startX, int startY, int startZ, int endX, int endY, int endZ) {
-		set(blocks, block.getId(), startX, startY, startZ, endX, endY, endZ);
+		blocksCount += set(blocks, block.getId(), startX, startY, startZ, endX, endY, endZ);
 	}
 
 	public void setFluids(Fluid fluid, int startX, int startY, int startZ, int endX, int endY, int endZ) {
-		set(fluids, fluid.getId(), startX, startY, startZ, endX, endY, endZ);
+		fluidsCount += set(fluids, fluid.getId(), startX, startY, startZ, endX, endY, endZ);
 	}
 
-	public void set(char[] array, char id, int startX, int startY, int startZ, int endX, int endY, int endZ) {
+	private int set(final char[] array, final char id, final int startX, final int startY, final int startZ, final int endX, final int endY, final int endZ) {
+		int changed = 0;
 		for (int x = startX; x < endX; ++x) {
 			for (int y = startY; y < endY; ++y) {
 				for (int z = startZ; z < endZ; ++z) {
-					set(array, id, x, y, z);
+					changed += set(array, id, x, y, z);
 				}
 			}
 		}
+		return changed;
 	}
 
-	private void set(final char[] array, final char id, final int x, final int y, final int z) {
-		++modCount;
-		array[getIndex(x, y, z)] = id;
+	private int set(final char[] array, final char id, final int x, final int y, final int z) {
+		return set(array, id, getIndex(x, y, z));
+	}
+
+	private int set(final char[] array, final char id, final int index) {
+		final char old = array[index];
+		if (old != id) {
+			++modCount;
+			array[index] = id;
+			return getIncrement(id);
+		}
+		return 0;
+	}
+
+	/**
+	 * If the id is 0 (the entry is air) then 1 should be removed from the amount of blocks/fluids in the chunk
+	 * otherwise, 1 should be added
+	 */
+	private int getIncrement(final RegistryEntry e) {
+		return getIncrement(e.getId());
+	}
+
+	/**
+	 * If the id is 0 (the entry is air) then 1 should be removed from the amount of blocks/fluids in the chunk
+	 * otherwise, 1 should be added
+	 */
+	private int getIncrement(final char id) {
+		return id == 0 ? -1 : 1;
 	}
 
 	public Block getBlock(int x, int y, int z) {
@@ -121,7 +170,35 @@ public class Chunk {
 	}
 
 	public boolean isEmpty() {
-		return blocksCount == 0 && fluidsCount == 0;
+		return blocksCount == 0 && fluidsCount == 0 && entitiesCount == 0 && blockEntitiesCount == 0;
+	}
+
+	public void addEntity(final Entity entity) {
+		if (entities.add(entity)) {
+			++entitiesCount;
+			++modCount;
+		}
+	}
+
+	public void removeEntity(final Entity entity) {
+		if (entities.remove(entity)) {
+			--entitiesCount;
+			++modCount;
+		}
+	}
+
+	public void addBlockEntity(final BlockEntity blockEntity) {
+		if (blockEntities.add(blockEntity)) {
+			++blockEntitiesCount;
+			++modCount;
+		}
+	}
+
+	public void removeBlockEntity(final BlockEntity blockEntity) {
+		if (blockEntities.remove(blockEntity)) {
+			--blockEntitiesCount;
+			++modCount;
+		}
 	}
 
 }

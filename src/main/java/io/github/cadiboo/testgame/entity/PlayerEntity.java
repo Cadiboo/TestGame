@@ -9,7 +9,7 @@ import io.github.cadiboo.testgame.world.World;
 /**
  * @author Cadiboo
  */
-public class PlayerEntity extends MovableEntity {
+public class PlayerEntity extends MovingEntity {
 
 	private final Inventory inventory = makeInventory();
 	private final Vec3d eyesPos = new Vec3d(pos);

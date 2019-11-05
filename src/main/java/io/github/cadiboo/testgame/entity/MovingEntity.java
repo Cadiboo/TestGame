@@ -7,11 +7,11 @@ import io.github.cadiboo.testgame.world.World;
 /**
  * @author Cadiboo
  */
-public class MovableEntity extends Entity implements Updateable {
+public class MovingEntity extends Entity implements Updateable {
 
 	public final Vec3d motion = new Vec3d(0, 0, 0);
 
-	public MovableEntity(final World world, final Vec3d pos) {
+	public MovingEntity(final World world, final Vec3d pos) {
 		super(world, pos);
 	}
 

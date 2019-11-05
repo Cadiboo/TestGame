@@ -12,12 +12,7 @@ import io.github.cadiboo.testgame.world.World;
  */
 public class StorageBlockEntity extends BlockEntity {
 
-	private final Inventory inventory = new Inventory(9 * 9) {
-		@Override
-		protected void slotChanged(final int slot) {
-			markDirty();
-		}
-	};
+	protected final Inventory inventory = makeInventory();
 
 	public StorageBlockEntity(final World world, final Pos pos) {
 		super(world, pos);
@@ -28,6 +23,23 @@ public class StorageBlockEntity extends BlockEntity {
 		if (type == CapabilityTypes.INVENTORY.get())
 			return inventory.cast();
 		return super.getCapability(type);
+	}
+
+	protected Inventory makeInventory() {
+		return new Inventory(getInventoryColumns() * getInventoryRows()) {
+			@Override
+			protected void slotChanged(final int slot) {
+				markDirty();
+			}
+		};
+	}
+
+	protected int getInventoryRows() {
+		return 6;
+	}
+
+	protected int getInventoryColumns() {
+		return 9;
 	}
 
 }

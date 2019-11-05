@@ -37,7 +37,7 @@ public class Registries {
 	static {
 
 		if (!Loader.canLoad(LoadIndex.CREATE_REGISTRIES))
-			throw new IllegalStateException();
+			throw new IllegalStateException("Tried to load registries too early");
 
 		REGISTRY_LIST = new LinkedHashMap<>();
 

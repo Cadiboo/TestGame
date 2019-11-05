@@ -1,4 +1,4 @@
-package io.github.cadiboo.testgame.mods.api;
+package io.github.cadiboo.testgame.api;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -13,9 +13,5 @@ import java.lang.annotation.Target;
 public @interface Mod {
 
 	String value();
-
-	String[] loadBefore() default {};
-
-	String[] loadAfter() default {};
 
 }

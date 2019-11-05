@@ -1,6 +1,5 @@
 package io.github.cadiboo.testgame.registry.supplier;
 
-import io.github.cadiboo.testgame.block.Block;
 import io.github.cadiboo.testgame.entity.EntityType;
 import io.github.cadiboo.testgame.registry.Registries;
 import io.github.cadiboo.testgame.registry.Registry;

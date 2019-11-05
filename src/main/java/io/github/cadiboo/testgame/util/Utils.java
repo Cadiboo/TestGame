@@ -49,4 +49,18 @@ public final class Utils {
 		return count;
 	}
 
+	static String requireNotEmpty(final String s, final String msg) {
+		if (s.isEmpty())
+			throw new IllegalStateException(msg);
+		return s;
+	}
+
+	public static long nanosToMillis(final long nanos) {
+		return nanos / 1_000_000;
+	}
+
+	public static long millisToSeconds(final long millis) {
+		return millis / 1_000;
+	}
+
 }

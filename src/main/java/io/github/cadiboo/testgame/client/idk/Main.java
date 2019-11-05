@@ -2,10 +2,8 @@ package io.github.cadiboo.testgame.client.idk;
 
 import io.github.cadiboo.testgame.TestGame;
 import io.github.cadiboo.testgame.chunk.Chunk;
-import io.github.cadiboo.testgame.client.color.BlockColorHandler;
-import io.github.cadiboo.testgame.client.color.FluidColorHandler;
-import io.github.cadiboo.testgame.loader.LoadPhase;
-import io.github.cadiboo.testgame.loader.Loader;
+import io.github.cadiboo.testgame.client.ClientGame;
+import io.github.cadiboo.testgame.util.Utils;
 import io.github.cadiboo.testgame.world.World;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,35 +14,18 @@ public final class Main {
 	private static boolean hasCrashed;
 
 	public static void main(String[] args) {
-		long startTime = System.nanoTime();
-		createWindow();
-		logTime("createWindow", startTime);
-		startTime = System.nanoTime();
-		setup();
-		logTime("setup", startTime);
-		startTime = System.nanoTime();
+		logTime(Main::createWindow, "createWindow");
+		logTime(Main::setup, "setup");
 		while (isRunning()) {
-			gameLoop();
+			logTime(Main::gameLoop, "gameLoop");
 		}
-		logTime("run", startTime);
-		startTime = System.nanoTime();
-		shutDown();
-		logTime("shutdown", startTime);
+		logTime(Main::shutDown, "shutDown");
 		System.exit(0);
 	}
 
 	private static void createWindow() {
-		// Create the Window
-//		try {
-//			Display.setDisplayMode(new DisplayMode(width, height));
-//			Display.setFullscreen(false);
-//			Display.setVSyncEnabled(true);
-//			Display.create();
-//			Display.setTitle(title);
-//		} catch (LWJGLException e) {
-//			System.out.println("LWJGLException @ Renderer start");
-//			System.exit(0);
-//		}
+		final Window window = new Window(1280, 800, TestGame.DOMAIN);
+		window.create();
 	}
 
 //	private static void renderChunks(final Graphics2D g2d, final int cx, final int cy, final Map<Chunk, Integer> chunks, final int z, final boolean force) {
@@ -93,21 +74,7 @@ public final class Main {
 //	}
 
 	public static void setup() {
-		Loader.add(new LoadPhase.Builder("init_block_colors")
-				.onRun(BlockColorHandler::init)
-				.runAfter("register_registry_entries")
-				.build()
-		);
-		Loader.add(new LoadPhase.Builder("init_fluid_colors")
-				.onRun(FluidColorHandler::init)
-				.runAfter("register_registry_entries")
-				.build()
-		);
-		try {
-			Class.forName(TestGame.class.getName(), true, Thread.currentThread().getContextClassLoader());
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		new ClientGame();
 	}
 
 	private static boolean isRunning() {
@@ -121,9 +88,13 @@ public final class Main {
 	private static void shutDown() {
 	}
 
-	private static void logTime(final String task, final long startTime) {
-		final long time = System.nanoTime() - startTime;
-		System.out.println("Task \"" + task + "\" took " + time / 1_000_000 + " millis");
+	private static void logTime(final Runnable task, final String name) {
+		final long start = System.nanoTime();
+		try {
+			task.run();
+		} finally {
+			System.out.println("Task \"" + name + "\" took " + Utils.nanosToMillis(System.nanoTime() - start) + "ms");
+		}
 	}
 
 	private static class ChunkMaker implements Runnable {
@@ -145,6 +116,16 @@ public final class Main {
 		@Override
 		public void run() {
 			chunks.put(world.getOrCreateChunk(x, y, z), -1);
+		}
+
+	}
+
+	private static class Interval {
+
+		private long time;
+
+		private Interval() {
+			time = System.nanoTime();
 		}
 
 	}

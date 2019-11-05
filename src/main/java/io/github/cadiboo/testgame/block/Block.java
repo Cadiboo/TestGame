@@ -14,7 +14,7 @@ public class Block extends RegistryEntry<Block> {
 	private final int hardness;
 	private final int conductivity;
 
-	public Block(final Location registryName, BlockProperties properties) {
+	public Block(final Location registryName, final BlockProperties properties) {
 		super(registryName);
 		this.hardness = properties.hardness;
 		this.conductivity = properties.conductivity;

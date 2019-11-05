@@ -3,6 +3,7 @@ package io.github.cadiboo.testgame.inventory;
 import io.github.cadiboo.testgame.capability.Capability;
 import io.github.cadiboo.testgame.item.ItemStack;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -21,15 +22,16 @@ public class Inventory implements Capability<Inventory> {
 
 	public Inventory(final int size) {
 		final ItemStack<?>[] stacks = new ItemStack<?>[size];
-		for (int i = 0; i < size; ++i)
-			stacks[i] = ItemStack.EMPTY;
+		Arrays.fill(stacks, ItemStack.EMPTY);
 		this.stacks = stacks;
 	}
 
-	public int getMaxStackSize(final int slot) {
-		return 64;
-	}
-
+	/**
+	 * Puts a stack into a slot
+	 * If you modify the stack put in or returned stack the inventory will NOT know about it!
+	 *
+	 * @return The stack that was in the slot
+	 */
 	public ItemStack<?> put(final int slot, final ItemStack<?> stack) {
 		Objects.requireNonNull(stack, "stack cannot be null");
 		final ItemStack<?> old = stacks[slot];
@@ -40,10 +42,20 @@ public class Inventory implements Capability<Inventory> {
 		return old;
 	}
 
+	/**
+	 * Returns the stack in the slot
+	 * If you modify the returned stack the inventory will NOT know about it!
+	 */
 	public ItemStack<?> get(final int slot) {
 		return stacks[slot];
 	}
 
+	/**
+	 * Replaces the stack in the slot with air
+	 * If you modify the returned stack the inventory will NOT know about it!
+	 *
+	 * @return The stack that was in the slot
+	 */
 	public ItemStack<?> remove(final int slot) {
 		final ItemStack<?> stack = stacks[slot];
 		if (stack.isEmpty())

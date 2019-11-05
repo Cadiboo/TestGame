@@ -7,7 +7,7 @@ import io.github.cadiboo.testgame.world.World;
 /**
  * @author Cadiboo
  */
-public class ItemEntity extends MovableEntity {
+public class ItemEntity extends MovingEntity {
 
 	public ItemStack<?> stack = null;
 

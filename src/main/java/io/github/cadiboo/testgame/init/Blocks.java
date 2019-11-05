@@ -1,6 +1,5 @@
 package io.github.cadiboo.testgame.init;
 
-import io.github.cadiboo.testgame.block.AirBlock;
 import io.github.cadiboo.testgame.block.Block;
 import io.github.cadiboo.testgame.block.BlockProperties;
 import io.github.cadiboo.testgame.block.DirtBlock;
@@ -25,22 +24,20 @@ public final class Blocks {
 	public static final BlockSupplier<Block> DIAMOND_ORE = BlockSupplier.of(Location.of("diamond_ore"));
 	public static final BlockSupplier<Block> EMERALD_ORE = BlockSupplier.of(Location.of("emerald_ore"));
 	public static final BlockSupplier<Block> REDSTONE_ORE = BlockSupplier.of(Location.of("redstone_ore"));
-	public static final BlockSupplier<Block> BLOCK_TO_BE_REPLACED = BlockSupplier.of(Location.of("block_to_be_replaced"));
 
 	public static void register(final RegisterEvent<Block> event) {
 		event.getRegistry().registerAll(
-				new AirBlock(Location.of("air"), new BlockProperties()),
-				new Block(Location.of("stone"), new BlockProperties()),
-				new DirtBlock(Location.of("dirt"), new BlockProperties()),
-				new TurfBlock(Location.of("turf"), new BlockProperties()),
-				new Block(Location.of("grass"), new BlockProperties()),
-				new Block(Location.of("coal_ore"), new BlockProperties()),
-				new Block(Location.of("iron_ore"), new BlockProperties()),
-				new Block(Location.of("gold_ore"), new BlockProperties()),
-				new Block(Location.of("diamond_ore"), new BlockProperties()),
-				new Block(Location.of("emerald_ore"), new BlockProperties()),
-				new Block(Location.of("redstone_ore"), new BlockProperties()),
-				new Block(Location.of("block_to_be_replaced"), new BlockProperties())
+				new Block(AIR.registryName, new BlockProperties()),
+				new Block(STONE.registryName, new BlockProperties()),
+				new DirtBlock(DIRT.registryName, new BlockProperties()),
+				new TurfBlock(TURF.registryName, new BlockProperties()),
+				new Block(GRASS.registryName, new BlockProperties()),
+				new Block(COAL_ORE.registryName, new BlockProperties()),
+				new Block(IRON_ORE.registryName, new BlockProperties()),
+				new Block(GOLD_ORE.registryName, new BlockProperties()),
+				new Block(DIAMOND_ORE.registryName, new BlockProperties()),
+				new Block(EMERALD_ORE.registryName, new BlockProperties()),
+				new Block(REDSTONE_ORE.registryName, new BlockProperties())
 		);
 	}
 

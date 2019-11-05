@@ -17,6 +17,7 @@ import java.util.function.BiConsumer;
  */
 public class Registry<T extends RegistryEntry> {
 
+	public static final char MAX_ID = Character.MAX_VALUE;
 	public final boolean supportsReplacement;
 	public final boolean reloadable;
 	public final Location registryName;
@@ -33,7 +34,8 @@ public class Registry<T extends RegistryEntry> {
 		this.type = type;
 	}
 
-	public void registerAll(final T... entries) {
+	@SafeVarargs
+	public final void registerAll(final T... entries) {
 		for (final T entry : entries) {
 			register(entry);
 		}
@@ -42,12 +44,18 @@ public class Registry<T extends RegistryEntry> {
 	public void register(final T entry) {
 		if (locked)
 			throw new IllegalStateException("Registry is locked!");
+
 		if (entry == null)
 			throw new NullPointerException("entry to register cannot be null!");
+
+		if (!type.isAssignableFrom(entry.getClass()))
+			throw new IllegalStateException("I hate generics. Registry type is \"" + type.getName() + "\" but entry being registered is \"" + entry.getClass() + "\"");
+
 		final Location registryName = entry.getRegistryName();
 		if (registryName == null)
 			throw new NullPointerException("registryName of entry (\"" + entry.getClass().getName() + "\") to register cannot be null!");
 
+		final int insertId = entries.size();
 		final T oldValue = entries.put(registryName, entry);
 		if (oldValue != null)
 			if (!supportsReplacement) {
@@ -55,8 +63,9 @@ public class Registry<T extends RegistryEntry> {
 				throw new IllegalStateException("Registry does not support replacement");
 			} else
 				entry.setId(oldValue.getId());
-		else
-			entry.setId(entries.size() - 1);
+		else {
+			entry.setId(insertId);
+		}
 		final List<RegistrySupplier<T>> registrySuppliers = suppliers.get(registryName);
 		if (registrySuppliers != null)
 			for (final RegistrySupplier<T> supplier : registrySuppliers) {
@@ -97,6 +106,7 @@ public class Registry<T extends RegistryEntry> {
 		return entries.get(registryName);
 	}
 
+	@SuppressWarnings("unchecked")
 	public T get(char id) {
 		return (T) ids[id];
 	}
@@ -105,6 +115,7 @@ public class Registry<T extends RegistryEntry> {
 		return locked;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void fillSuppliers() {
 		final List<RegistrySupplier> suppliersForMe = RegistrySupplier.SUPPLIERS.remove(this.registryName);
 		if (suppliersForMe == null || suppliersForMe.isEmpty()) {

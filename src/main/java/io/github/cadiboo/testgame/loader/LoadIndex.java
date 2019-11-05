@@ -1,7 +1,7 @@
 package io.github.cadiboo.testgame.loader;
 
 import io.github.cadiboo.testgame.TestGame;
-import io.github.cadiboo.testgame.mods.ModLoader;
+import io.github.cadiboo.testgame.mod.ModLoader;
 import io.github.cadiboo.testgame.registry.Registries;
 
 import static io.github.cadiboo.testgame.loader.Loader.add;
@@ -31,18 +31,67 @@ public interface LoadIndex {
 
 	LoadPhase REGISTER_REGISTRY_ENTRIES = add(new LoadPhase.Builder("register_registry_entries")
 			.onRun(() -> Registries.forEach((location, registry) -> registry.load()))
-			.runBefore("reload_registries")
+			.runAfter("create_registries")
 			.build()
 	);
 
-	LoadPhase RELOAD_REGISTRIES = add(new LoadPhase.Builder("reload_registries")
+	LoadPhase RELOAD_REGISTRIES_0 = add(new LoadPhase.Builder("reload_registries_0")
 			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
-			.runBefore("reload_registries_again")
+			.runAfter("register_registry_entries")
 			.build()
 	);
 
-	LoadPhase RELOAD_REGISTRIES_AGAIN = add(new LoadPhase.Builder("reload_registries_again")
+	LoadPhase RELOAD_REGISTRIES_1 = add(new LoadPhase.Builder("reload_registries_1")
 			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.runAfter("reload_registries_0")
+			.build()
+	);
+
+	LoadPhase RELOAD_REGISTRIES_2 = add(new LoadPhase.Builder("reload_registries_2")
+			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.runAfter("reload_registries_1")
+			.build()
+	);
+
+	LoadPhase RELOAD_REGISTRIES_3 = add(new LoadPhase.Builder("reload_registries_3")
+			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.runAfter("reload_registries_2")
+			.build()
+	);
+
+	LoadPhase RELOAD_REGISTRIES_4 = add(new LoadPhase.Builder("reload_registries_4")
+			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.runAfter("reload_registries_3")
+			.build()
+	);
+
+	LoadPhase RELOAD_REGISTRIES_5 = add(new LoadPhase.Builder("reload_registries_5")
+			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.runAfter("reload_registries_4")
+			.build()
+	);
+
+	LoadPhase RELOAD_REGISTRIES_6 = add(new LoadPhase.Builder("reload_registries_6")
+			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.runAfter("reload_registries_5")
+			.build()
+	);
+
+	LoadPhase RELOAD_REGISTRIES_7 = add(new LoadPhase.Builder("reload_registries_7")
+			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.runAfter("reload_registries_6")
+			.build()
+	);
+
+	LoadPhase RELOAD_REGISTRIES_8 = add(new LoadPhase.Builder("reload_registries_8")
+			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.runAfter("reload_registries_7")
+			.build()
+	);
+
+	LoadPhase RELOAD_REGISTRIES_9 = add(new LoadPhase.Builder("reload_registries_9")
+			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.runAfter("reload_registries_8")
 			.build()
 	);
 

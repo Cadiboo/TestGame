@@ -1,0 +1,28 @@
+modId="test_mod" # REQUIRED
+version="${version}" # REQUIRED
+gameVersionRange="[0.1.0,)" # see https://maven.apache.org/enforcer/enforcer-rules/versionRanges.html # REQUIRED
+distribution="BOTH" # [BOTH, CLIENT, SERVER] # REQUIRED
+displayName="Test Mod" # OPTIONAL
+modHomepageUrl="https://cadiboo.github.io/projects/test_mod" # REQUIRED
+issueTrackerURL="https://github.com/Cadiboo/TestGame/issues" # REQUIRED
+updateJSONURL="https://cadiboo.github.io/projects/test_mod/update.json" # OPTIONAL
+authors="Cadiboo" # REQUIRED
+credits="Thanks to Cadiboo" # OPTIONAL
+description='''
+A cool test mod
+''' # REQUIRED
+# Dependencies are optional
+[[dependencies]]
+	modId="other_test_mod" # REQUIRED
+	versionRange="[0.1.1,)" # see https://maven.apache.org/enforcer/enforcer-rules/versionRanges.html # REQUIRED
+	required=true # [true, false] # REQUIRED
+	modHomepageUrl="https://cadiboo.github.io/projects/other_test_mod" # REQUIRED
+	ordering="NONE" # [EITHER, BEFORE, AFTER] # OPTIONAL, defaults to NONE
+	distribution="BOTH" # [BOTH, CLIENT, SERVER] # OPTIONAL, defaults to BOTH
+[[dependencies]]
+	modId="another_test_mod" # REQUIRED
+	versionRange="[0.1.0,)" # see https://maven.apache.org/enforcer/enforcer-rules/versionRanges.html # REQUIRED
+	required=false # [true, false] # REQUIRED
+	modHomepageUrl="https://cadiboo.github.io/projects/another_test_mod" # REQUIRED
+	ordering="AFTER" # [EITHER, BEFORE, AFTER] # OPTIONAL, defaults to NONE
+	distribution="CLIENT" # [BOTH, CLIENT, SERVER] # OPTIONAL, defaults to BOTH

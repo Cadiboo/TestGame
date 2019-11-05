@@ -12,14 +12,19 @@ import io.github.cadiboo.testgame.world.World;
  */
 public class ChestBlockEntity extends BlockEntity {
 
-	private final Inventory inventory = makeInventory();
+	protected final Inventory inventory = makeInventory();
 
 	public ChestBlockEntity(final World world, final Pos pos) {
 		super(world, pos);
 	}
 
 	protected Inventory makeInventory() {
-		return new Inventory(getInventoryColumns() * getInventoryRows());
+		return new Inventory(getInventoryColumns() * getInventoryRows()) {
+			@Override
+			protected void slotChanged(final int slot) {
+				markDirty();
+			}
+		};
 	}
 
 	protected int getInventoryRows() {

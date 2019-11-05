@@ -28,4 +28,8 @@ public class BlockEntity {
 	public void markDirty() {
 	}
 
+	public void onRemoved() {
+
+	}
+
 }

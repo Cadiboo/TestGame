@@ -18,10 +18,10 @@ public final class Fluids {
 
 	public static void register(final RegisterEvent<Fluid> event) {
 		event.getRegistry().registerAll(
-				new Fluid(Location.of("air"), new FluidProperties().setMass(0)),
-				new Fluid(Location.of("water"), new FluidProperties().setMass(1000)),
-				new Fluid(Location.of("lava"), new FluidProperties().setMass(100_000_000)),
-				new Fluid(Location.of("sulphur"), new FluidProperties().setMass(32))
+				new Fluid(AIR.registryName, new FluidProperties().setMass(0).air()),
+				new Fluid(WATER.registryName, new FluidProperties().setMass(1000)),
+				new Fluid(LAVA.registryName, new FluidProperties().setMass(100_000_000)),
+				new Fluid(SULPHUR.registryName, new FluidProperties().setMass(32))
 		);
 	}
 

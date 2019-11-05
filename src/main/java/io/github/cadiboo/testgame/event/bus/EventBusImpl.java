@@ -1,7 +1,9 @@
 package io.github.cadiboo.testgame.event.bus;
 
+import io.github.cadiboo.testgame.TestGame;
 import io.github.cadiboo.testgame.event.Event;
 import io.github.cadiboo.testgame.event.GenericEvent;
+import io.github.cadiboo.testgame.util.Utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +18,7 @@ import static io.github.cadiboo.testgame.util.TypeResolver.resolveRawArgument;
  */
 public class EventBusImpl implements EventBus {
 
+	private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty(TestGame.DOMAIN + ".debug.events"));
 	private static final Function<Class<? extends Event>, List<EventListener<?>>> MAKE_LISTENERS_LIST_FUNCTION = k -> new ArrayList<>();
 
 	private HashMap<Class<? extends Event>, List<EventListener<?>>> listeners = new HashMap<>();
@@ -28,8 +31,18 @@ public class EventBusImpl implements EventBus {
 		return eventClass;
 	}
 
+	protected static String getEventName(final Event event) {
+		String name = event.getClass().getSimpleName();
+		if (event instanceof GenericEvent)
+			name += "<" + ((GenericEvent) event).type.getSimpleName() + ">";
+		return name;
+	}
+
 	@Override
 	public <T extends Event> void post(final T event) {
+		long startTime = 0;
+		if (DEBUG)
+			startTime = System.nanoTime();
 		for (final EventListener listener : getListeners(event)) {
 			try {
 				listener.accept(event);
@@ -37,6 +50,8 @@ public class EventBusImpl implements EventBus {
 				throw new RuntimeException("Exception posting event \"" + event + "\" for listener \"" + listener + "\"", e);
 			}
 		}
+		if (DEBUG)
+			System.out.println(getEventName(event) + " took " + Utils.nanosToMillis(System.nanoTime() - startTime) + "ms");
 	}
 
 	@Override

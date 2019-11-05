@@ -1,72 +1,72 @@
 package io.github.cadiboo.testgame.loader;
 
+import io.github.cadiboo.testgame.TestGame;
 import io.github.cadiboo.testgame.util.TopologicalSort;
 import io.github.cadiboo.testgame.util.TopologicalSort.TypedNode;
+import io.github.cadiboo.testgame.util.Utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Cadiboo
  */
 public final class Loader {
 
+	private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty(TestGame.DOMAIN + ".debug.loader"));
 	private static List<LoadPhase> phases = new ArrayList<>();
-	private static int currentIndex = -1;
-	static {
-		LoadIndex.touch();
-	}
+	/**
+	 * Contains all the already loaded phases + the currently loading one
+	 */
+	private static Set<LoadPhase> loaded = new HashSet<>();
+	private static boolean loading = false;
 
-	public static int getCurrentIndex() {
-		return currentIndex;
-	}
-
-	public static boolean canLoad(final LoadPhase loadPhase) {
-		return phases.indexOf(loadPhase) <= currentIndex;
+	public static boolean canLoad(final LoadPhase phase) {
+		return loaded.contains(phase);
 	}
 
 	public static void load() {
 		System.out.println("Sorting LoadPhases...");
 		sortPhases(phases);
 		System.out.println("Starting game...");
-		currentIndex = 0;
-		while (getCurrentIndex() < getSize()) {
+		loading = true;
+		while (phases.size() > 0) {
 			loadNext();
 		}
+		loading = false;
 		System.out.println("Finished loading game...");
-		currentIndex = -1;
 	}
 
-	public static int getSize() {
-		return phases.size();
-	}
-
-	public static LoadPhase add(LoadPhase loadPhase) {
-		phases.add(loadPhase);
-		if (isRunning())
+	public static LoadPhase add(LoadPhase phase) {
+		phases.add(phase);
+		if (loading) {
+			System.out.println("LoadPhase added while already loading! Re-sorting LoadPhases...");
 			sortPhases(phases);
-		return loadPhase;
-	}
-
-	private static boolean isRunning() {
-		return currentIndex > -1;
+		}
+		return phase;
 	}
 
 	private static void loadNext() {
-		final LoadPhase loadEntry = getCurrentEntry();
+		// Remove it now so that if more phases are added it isn't re-evaluated and/or re-run by a re-sort
+		final LoadPhase phase = phases.remove(0);
+		loaded.add(phase);
+		long startTime = 0;
+		if (DEBUG) {
+			System.out.println("Loading phase \"" + phase.name + "\"");
+			startTime = System.nanoTime();
+		}
 		try {
-			for (final Runnable runnable : loadEntry.runnables)
+			for (final Runnable runnable : phase.runnables)
 				runnable.run();
 		} catch (Exception e) {
-			throw new RuntimeException("Caught exception from " + loadEntry + " (\"" + loadEntry.name + "\") at index " + currentIndex, e);
+			throw new RuntimeException("Caught exception from " + phase + " (\"" + phase.name + "\") at index " + loaded.size(), e);
 		}
-		++currentIndex;
-	}
-
-	public static LoadPhase getCurrentEntry() {
-		return phases.get(currentIndex);
+		if (DEBUG)
+			System.out.println("Phase \"" + phase.name + "\" took " + Utils.nanosToMillis(System.nanoTime() - startTime) + "ms");
 	}
 
 	private static void sortPhases(final List<LoadPhase> phases) {
@@ -82,7 +82,7 @@ public final class Loader {
 			for (final String runBefore : phase.runBefore) {
 				final TopologicalSort.Node runBeforeNode = map.get(runBefore);
 				if (runBeforeNode == null) {
-					System.out.println("Phase " + phase.name + " wants to run before non-existent phase " + runBefore);
+					System.err.println("Phase \"" + phase.name + "\" wants to run before non-existent phase \"" + runBefore + "\"");
 					continue;
 				}
 				// first.runsBefore(second) -> first.addEdge(second)
@@ -91,7 +91,7 @@ public final class Loader {
 			for (final String runAfter : phase.runAfter) {
 				final TopologicalSort.Node runAfterNode = map.get(runAfter);
 				if (runAfterNode == null) {
-					System.out.println("Phase " + phase.name + " wants to run after non-existent phase " + runAfter);
+					System.err.println("Phase \"" + phase.name + "\" wants to run after non-existent phase \"" + runAfter + "\"");
 					continue;
 				}
 				// first.runsBefore(second) -> first.addEdge(second)

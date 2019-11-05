@@ -17,12 +17,14 @@ public class Fluid extends RegistryEntry<Fluid> {
 	private final int flowRange;
 	private final int flowSpeed;
 	private final int mass;
+	private final boolean isAir;
 
-	public Fluid(final Location registryName, FluidProperties properties) {
+	public Fluid(final Location registryName, final FluidProperties properties) {
 		super(registryName);
 		this.flowRange = properties.flowRange;
 		this.flowSpeed = properties.flowSpeed;
 		this.mass = properties.mass;
+		this.isAir = properties.isAir;
 	}
 
 	public int getFlowRange() {
@@ -35,6 +37,10 @@ public class Fluid extends RegistryEntry<Fluid> {
 
 	public int getMass() {
 		return mass;
+	}
+
+	public boolean isAir() {
+		return isAir;
 	}
 
 }

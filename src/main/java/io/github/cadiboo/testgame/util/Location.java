@@ -9,16 +9,23 @@ import java.util.Objects;
  */
 public class Location {
 
+	public static final char SEPARATOR_CHAR = ':';
 	private final String domain;
 	private final String path;
 
 	private Location(final String domain, final String path) {
-		this.domain = Objects.requireNonNull(domain, "domain cannot be null!").toLowerCase();
+		this.domain = Utils.requireNotEmpty(Objects.requireNonNull(domain, "domain cannot be null!").toLowerCase(), "domain cannot be empty!");
 		this.path = Objects.requireNonNull(path, "path cannot be null!").toLowerCase();
 	}
 
 	public static Location of(final String location) {
-		return of(TestGame.DOMAIN, location);
+		Objects.requireNonNull(location, "location cannot be null!");
+		final int separatorIndex = location.indexOf(SEPARATOR_CHAR);
+		if (separatorIndex == -1)
+			// throw new IllegalStateException();
+			return of(TestGame.DOMAIN, location);
+		else
+			return of(location.substring(0, separatorIndex), location.substring(separatorIndex));
 	}
 
 	public static Location of(final String domain, final String path) {
@@ -54,7 +61,7 @@ public class Location {
 
 	@Override
 	public String toString() {
-		return domain + ":" + path;
+		return domain + SEPARATOR_CHAR + path;
 	}
 
 }
