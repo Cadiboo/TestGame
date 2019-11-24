@@ -17,7 +17,8 @@ public final class Main {
 		logTime(Main::createWindow, "createWindow");
 		logTime(Main::setup, "setup");
 		while (isRunning()) {
-			logTime(Main::gameLoop, "gameLoop");
+//			logTime(Main::gameLoop, "gameLoop");
+			gameLoop();
 		}
 		logTime(Main::shutDown, "shutDown");
 		System.exit(0);

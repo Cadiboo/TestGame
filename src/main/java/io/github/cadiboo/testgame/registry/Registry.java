@@ -22,7 +22,7 @@ public class Registry<T extends RegistryEntry> {
 	public final boolean reloadable;
 	public final Location registryName;
 	private final LinkedHashMap<Location, T> entries = new LinkedHashMap<>();
-	private final HashMap<Location, List<RegistrySupplier<T>>> suppliers = new HashMap<>();
+	private final HashMap<Location, List<RegistrySupplier<T, ?>>> suppliers = new HashMap<>();
 	private final Class<T> type;
 	private RegistryEntry[] ids = null;
 	private boolean locked;
@@ -66,9 +66,9 @@ public class Registry<T extends RegistryEntry> {
 		else {
 			entry.setId(insertId);
 		}
-		final List<RegistrySupplier<T>> registrySuppliers = suppliers.get(registryName);
+		final List<RegistrySupplier<T, ?>> registrySuppliers = suppliers.get(registryName);
 		if (registrySuppliers != null)
-			for (final RegistrySupplier<T> supplier : registrySuppliers) {
+			for (final RegistrySupplier<T, ?> supplier : registrySuppliers) {
 				supplier.cached = entry;
 			}
 	}
@@ -121,7 +121,7 @@ public class Registry<T extends RegistryEntry> {
 		if (suppliersForMe == null || suppliersForMe.isEmpty()) {
 			return;
 		}
-		for (RegistrySupplier<T> supplier : suppliersForMe) {
+		for (RegistrySupplier<T, ?> supplier : suppliersForMe) {
 			this.suppliers.computeIfAbsent(supplier.registryName, k -> new ArrayList<>()).add(supplier);
 		}
 	}

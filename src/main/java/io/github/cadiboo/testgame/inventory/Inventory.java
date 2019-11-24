@@ -2,6 +2,7 @@ package io.github.cadiboo.testgame.inventory;
 
 import io.github.cadiboo.testgame.capability.Capability;
 import io.github.cadiboo.testgame.item.ItemStack;
+import io.github.cadiboo.testgame.save.SaveData;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -71,6 +72,28 @@ public class Inventory implements Capability<Inventory> {
 	 * @param slot The slot that had something in it changed
 	 */
 	protected void slotChanged(final int slot) {
+	}
+
+	public Inventory read(final SaveData saveData) {
+		ItemStack<?>[] stacks = new ItemStack<?>[saveData.readVarInt()];
+		for (int i = 0; i < stacks.length; ++i)
+			stacks[i] = ItemStack.EMPTY.read(saveData);
+		return new Inventory(stacks);
+	}
+
+	@Override
+	public void write(final SaveData saveData) {
+		saveData.writeVarInt(stacks.length);
+		for (final ItemStack<?> stack : stacks)
+			stack.write(saveData);
+	}
+
+	@Override
+	public String toString() {
+		return "Inventory {" +
+				"size=" + stacks.length +
+				", stacks=" + Arrays.toString(stacks) +
+				'}';
 	}
 
 }

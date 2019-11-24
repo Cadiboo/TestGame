@@ -14,7 +14,7 @@ import static io.github.cadiboo.testgame.testmod.TestMod.MOD_ID;
  */
 public class ModBlocks {
 
-	public static final BlockSupplier<Block> NEW_BLOCK = BlockSupplier.of(Location.of(MOD_ID, "new_block"));
+	public static final BlockSupplier NEW_BLOCK = BlockSupplier.of(Location.of(MOD_ID, "new_block"));
 
 	public static void register(final RegisterEvent<Block> event) {
 		event.getRegistry().registerAll(

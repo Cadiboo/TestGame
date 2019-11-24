@@ -1,7 +1,5 @@
 package io.github.cadiboo.testgame.blockentity;
 
-import io.github.cadiboo.testgame.capability.Capability;
-import io.github.cadiboo.testgame.capability.CapabilityType;
 import io.github.cadiboo.testgame.init.CapabilityTypes;
 import io.github.cadiboo.testgame.inventory.Inventory;
 import io.github.cadiboo.testgame.util.math.Pos;
@@ -16,6 +14,7 @@ public class ChestBlockEntity extends BlockEntity {
 
 	public ChestBlockEntity(final World world, final Pos pos) {
 		super(world, pos);
+		this.addCapability(CapabilityTypes.INVENTORY.get(), inventory);
 	}
 
 	protected Inventory makeInventory() {
@@ -33,13 +32,6 @@ public class ChestBlockEntity extends BlockEntity {
 
 	protected int getInventoryColumns() {
 		return 9;
-	}
-
-	@Override
-	public <T extends Capability<?>> T getCapability(final CapabilityType<T> type) {
-		if (type == CapabilityTypes.INVENTORY.get())
-			return inventory.cast();
-		return super.getCapability(type);
 	}
 
 }

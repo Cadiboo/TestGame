@@ -97,9 +97,9 @@ public final class ChunkGenerator {
 
 		private final long minY;
 		private final long maxY;
-		private final BlockSupplier<Block> block;
+		private final BlockSupplier<?> block;
 
-		public Layer(final long minY, final long maxY, final BlockSupplier<Block> block) {
+		public Layer(final long minY, final long maxY, final BlockSupplier<?> block) {
 			this.minY = minY;
 			this.maxY = maxY;
 			this.block = block;
@@ -112,9 +112,9 @@ public final class ChunkGenerator {
 		private final int chance;
 		private final long minY;
 		private final long maxY;
-		private final BlockSupplier<Block> block;
+		private final BlockSupplier<?> block;
 
-		public Decorator(final int chance, final long minY, final long maxY, final BlockSupplier<Block> block) {
+		public Decorator(final int chance, final long minY, final long maxY, final BlockSupplier<?> block) {
 			this.chance = chance;
 			this.minY = minY;
 			this.maxY = maxY;

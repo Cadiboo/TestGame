@@ -1,10 +1,10 @@
 package io.github.cadiboo.testgame.blockentity;
 
-import io.github.cadiboo.testgame.capability.Capability;
-import io.github.cadiboo.testgame.capability.CapabilityType;
+import io.github.cadiboo.testgame.heat.HeatLevel;
 import io.github.cadiboo.testgame.init.CapabilityTypes;
 import io.github.cadiboo.testgame.inventory.Inventory;
 import io.github.cadiboo.testgame.item.ItemStack;
+import io.github.cadiboo.testgame.recipe.SmeltingRecipe;
 import io.github.cadiboo.testgame.recipe.SmeltingRecipes;
 import io.github.cadiboo.testgame.util.LogicalSide;
 import io.github.cadiboo.testgame.util.Updateable;
@@ -22,11 +22,14 @@ public class SmelterBlockEntity extends BlockEntity implements Updateable {
 	public static final String FUEL_VALUE_KEY = "fuelValue";
 
 	protected final Inventory inventory = makeInventory();
+	protected final HeatLevel heatLevel = new HeatLevel(0);
 	protected int fuelTimeLeft;
 	protected int smeltTimeLeft;
 
 	public SmelterBlockEntity(final World world, final Pos pos) {
 		super(world, pos);
+		this.addCapability(CapabilityTypes.INVENTORY.get(), inventory);
+		this.addCapability(CapabilityTypes.HEAT_LEVEL.get(), heatLevel);
 	}
 
 	protected Inventory makeInventory() {
@@ -39,13 +42,6 @@ public class SmelterBlockEntity extends BlockEntity implements Updateable {
 	}
 
 	@Override
-	public <T extends Capability<?>> T getCapability(final CapabilityType<T> type) {
-		if (type == CapabilityTypes.INVENTORY.get())
-			return inventory.cast();
-		return super.getCapability(type);
-	}
-
-	@Override
 	public void update() {
 		if (world.getLogicalSide() != LogicalSide.LOGICAL_SERVER)
 			return;
@@ -53,16 +49,17 @@ public class SmelterBlockEntity extends BlockEntity implements Updateable {
 
 		final ItemStack<?> input = inventory.get(INPUT_SLOT);
 		final ItemStack<?> stackInOutput = inventory.get(OUTPUT_SLOT);
-		final ItemStack<?> smeltResult = input.isEmpty() ? ItemStack.EMPTY : SmeltingRecipes.getSmeltResult(input);
+		final SmeltingRecipe recipe = SmeltingRecipes.getRecipe(input);
+		final ItemStack<?> smeltResult = recipe == null ? ItemStack.EMPTY : recipe.result;
 		final boolean canProduceOutput = !smeltResult.isEmpty() && stackInOutput.canAddFully(smeltResult);
 
 		if (hasFuel()) {
 			// reduce amount of fuel time (cooling)
-			--fuelTimeLeft;
+			heatLevel.heat = --fuelTimeLeft;
 			somethingChanged = true;
 		} else if (canProduceOutput) {
 			// burn fuel if we are going to use it
-			fuelTimeLeft = tryBurnFuel();
+			heatLevel.heat = fuelTimeLeft = tryBurnFuel();
 			if (hasFuel())
 				somethingChanged = true;
 		} else {

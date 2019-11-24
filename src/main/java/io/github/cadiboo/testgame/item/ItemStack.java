@@ -1,13 +1,17 @@
 package io.github.cadiboo.testgame.item;
 
+import io.github.cadiboo.testgame.capability.DefaultCapabilityHandler;
 import io.github.cadiboo.testgame.init.Items;
+import io.github.cadiboo.testgame.registry.Registries;
+import io.github.cadiboo.testgame.save.SaveData;
+import io.github.cadiboo.testgame.save.Saveable;
 
 /**
  * @author Cadiboo
  */
-public class ItemStack<T extends Item> implements Cloneable {
+public class ItemStack<T extends Item> extends DefaultCapabilityHandler implements Saveable<ItemStack<?>>, Cloneable {
 
-	public static final ItemStack<AirItem> EMPTY = new ItemStack<AirItem>(null, 0, 0) {
+	public static transient final ItemStack<AirItem> EMPTY = new ItemStack<AirItem>(null, 0, 0) {
 		@Override
 		public AirItem getItem() {
 			return Items.AIR.get();
@@ -30,6 +34,28 @@ public class ItemStack<T extends Item> implements Cloneable {
 		this.item = item;
 		this.maxSize = maxSize;
 		this.size = size;
+	}
+
+	public ItemStack<?> read(final SaveData saveData) {
+		if (saveData.readBoolean())
+			return ItemStack.EMPTY;
+		char id = saveData.readVarChar();
+		int size = saveData.readVarInt();
+		int maxSize = saveData.readVarInt();
+		final ItemStack<Item> itemStack = new ItemStack<>(Registries.ITEMS.get(id), size, maxSize);
+		itemStack.readCapabilities(saveData);
+		return itemStack;
+	}
+
+	public void write(final SaveData saveData) {
+		final boolean empty = this.isEmpty();
+		saveData.writeBoolean(empty);
+		if (empty)
+			return;
+		saveData.writeVarChar(this.getItem().getId());
+		saveData.writeVarInt(this.getSize());
+		saveData.writeVarInt(this.getMaxSize());
+		this.writeCapabilities(saveData);
 	}
 
 	public T getItem() {

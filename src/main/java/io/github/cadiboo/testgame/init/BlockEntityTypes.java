@@ -5,7 +5,7 @@ import io.github.cadiboo.testgame.blockentity.BlockEntityType;
 import io.github.cadiboo.testgame.blockentity.SmelterBlockEntity;
 import io.github.cadiboo.testgame.blockentity.StorageBlockEntity;
 import io.github.cadiboo.testgame.event.registry.RegisterEvent;
-import io.github.cadiboo.testgame.registry.supplier.BlockEntitySupplier;
+import io.github.cadiboo.testgame.registry.supplier.BlockEntityTypeSupplier;
 import io.github.cadiboo.testgame.util.Location;
 
 /**
@@ -13,9 +13,9 @@ import io.github.cadiboo.testgame.util.Location;
  */
 public final class BlockEntityTypes {
 
-	public static final BlockEntitySupplier<BlockEntityType<BlockEntity>> TEST_BLOCK_ENTITY = BlockEntitySupplier.of(Location.of("test_block_entity"));
-	public static final BlockEntitySupplier<BlockEntityType<StorageBlockEntity>> STORAGE = BlockEntitySupplier.of(Location.of("storage"));
-	public static final BlockEntitySupplier<BlockEntityType<SmelterBlockEntity>> SMELTER = BlockEntitySupplier.of(Location.of("smelter"));
+	public static final BlockEntityTypeSupplier<BlockEntityType<BlockEntity>> TEST_BLOCK_ENTITY = BlockEntityTypeSupplier.of(Location.of("test_block_entity"));
+	public static final BlockEntityTypeSupplier<BlockEntityType<StorageBlockEntity>> STORAGE = BlockEntityTypeSupplier.of(Location.of("storage"));
+	public static final BlockEntityTypeSupplier<BlockEntityType<SmelterBlockEntity>> SMELTER = BlockEntityTypeSupplier.of(Location.of("smelter"));
 
 	public static void register(RegisterEvent<BlockEntityType> event) {
 		event.getRegistry().registerAll(

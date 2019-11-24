@@ -12,6 +12,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Mod {
 
+	/**
+	 * @return The unique mod id of your mod
+	 */
 	String value();
 
 }

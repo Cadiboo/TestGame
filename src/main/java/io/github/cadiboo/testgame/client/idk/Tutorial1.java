@@ -41,8 +41,8 @@ public class Tutorial1 extends Game {
 		glfwSetWindowTitle(getWindowID(), "The First Triangle");
 
 		shaderProgram = new ShaderProgram();
-		shaderProgram.attachVertexShader("shaders/shader.vs");
-		shaderProgram.attachFragmentShader("shaders/shader.fs");
+		shaderProgram.attachVertexShader("shaders/shader.vsh");
+		shaderProgram.attachFragmentShader("shaders/shader.fsh");
 		shaderProgram.link();
 
 		// Generate and bind a Vertex Array

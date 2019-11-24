@@ -16,9 +16,7 @@ public class TopologicalSort {
 		first.addEdge(second);
 		first.addEdge(third);
 		second.addEdge(third);
-
-		Node[] allNodes = {first, second, third};
-		sort(Arrays.asList(allNodes));
+		System.out.println(sort(Arrays.asList(first, second, third)));
 	}
 
 	public static List<Node> sort(final Collection<Node> allNodes) {

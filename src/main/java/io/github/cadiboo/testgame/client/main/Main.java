@@ -16,6 +16,7 @@ public class Main {
 		// 5 display main menu (rendering)
 
 		createWindow();
+		game();
 	}
 
 	private static void createWindow() {

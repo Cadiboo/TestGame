@@ -33,7 +33,7 @@ public class Chunk {
 	private final List<Entity> entities;
 	private final List<BlockEntity> blockEntities;
 
-	private int modCount = 0;
+	private transient int modCount = 0;
 	private int blocksCount = 0;
 	private int fluidsCount = 0;
 	private int entitiesCount = 0;

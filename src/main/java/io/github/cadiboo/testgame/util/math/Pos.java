@@ -9,6 +9,12 @@ public class Pos {
 	public long y;
 	public long z;
 
+	public Pos(final long x, final long y, final long z) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+	}
+
 	@Override
 	public int hashCode() {
 		int result = 1;
@@ -26,6 +32,11 @@ public class Pos {
 		return x == pos.x &&
 				y == pos.y &&
 				z == pos.z;
+	}
+
+	@Override
+	public String toString() {
+		return "Pos {x=" + x + ", y=" + y + ", z=" + z + '}';
 	}
 
 }
