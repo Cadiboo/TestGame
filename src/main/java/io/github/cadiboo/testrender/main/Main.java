@@ -10,8 +10,12 @@ public final class Main {
 	private static byte[] memoryBuffer = new byte[0x100000];
 
 	public static void main(String... args) {
-		launchGameThread();
-		GameRenderer.doRendering();
+		try {
+			launchGameThread();
+			GameRenderer.doRendering();
+		} catch (Throwable t) {
+			handleException(t);
+		}
 	}
 
 	private static void launchGameThread() {
@@ -42,10 +46,17 @@ public final class Main {
 			memoryBuffer = null;
 			System.gc();
 		}
-		if (!GameRenderer.isCreated()) {
-			error.printStackTrace(System.err);
-			error.printStackTrace(System.out);
-			return;
+		boolean windowOpen = false;
+		try {
+			windowOpen = GameRenderer.isWindowOpen();
+		} finally {
+			if (!windowOpen) {
+				error.printStackTrace(System.err);
+				error.printStackTrace(System.out);
+				return;
+			} else {
+				return;
+			}
 		}
 	}
 

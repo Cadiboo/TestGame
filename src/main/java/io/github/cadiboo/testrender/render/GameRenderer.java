@@ -1,181 +1,138 @@
 package io.github.cadiboo.testrender.render;
 
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWErrorCallback;
-import org.lwjgl.glfw.GLFWVidMode;
-import org.lwjgl.opengl.GL;
+import io.github.cadiboo.testgame.TestGame;
+import io.github.cadiboo.testrender.render.object.VertexArray;
+import io.github.cadiboo.testrender.render.object.VertexBuffer;
+import io.github.cadiboo.testrender.render.shader.ShaderProgram;
+
+import java.util.ArrayList;
 
 import static io.github.cadiboo.testrender.main.Main.handleException;
-import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
-import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
-import static org.lwjgl.glfw.GLFW.GLFW_RELEASE;
-import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
-import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
-import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
-import static org.lwjgl.glfw.GLFW.glfwDefaultWindowHints;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwPollEvents;
-import static org.lwjgl.glfw.GLFW.glfwSetKeyCallback;
-import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.glfw.GLFW.glfwWindowHint;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
-import static org.lwjgl.opengl.GL11.GL_MODELVIEW;
+import static org.lwjgl.opengl.GL11.GL_Q;
 import static org.lwjgl.opengl.GL11.GL_QUADS;
 import static org.lwjgl.opengl.GL11.GL_TRIANGLES;
-import static org.lwjgl.opengl.GL11.glBegin;
 import static org.lwjgl.opengl.GL11.glClear;
-import static org.lwjgl.opengl.GL11.glClearColor;
-import static org.lwjgl.opengl.GL11.glEnable;
-import static org.lwjgl.opengl.GL11.glEnd;
-import static org.lwjgl.opengl.GL11.glLoadIdentity;
-import static org.lwjgl.opengl.GL11.glMatrixMode;
-import static org.lwjgl.opengl.GL11.glVertex3f;
-import static org.lwjgl.system.MemoryUtil.NULL;
+import static org.lwjgl.opengl.GL11.glDrawArrays;
+import static org.lwjgl.opengl.GL20.glDisableVertexAttribArray;
+import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
+import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 /**
  * @author Cadiboo
  */
 public class GameRenderer {
 
-	private static long windowHandle;
-	private static boolean created;
+	private final Window window;
+	private final VertexArray vertexArray;
+	private boolean isWindowOpen;
+	private ShaderProgram shader;
+
+	private GameRenderer() {
+		window = new Window(800, 400, TestGame.TITLE);
+		window.init();
+		isWindowOpen = true;
+		{
+			shader = new ShaderProgram();
+			shader.attachVertexShader("shader/base");
+			shader.attachGeometryShader("shader/base");
+			shader.attachFragmentShader("shader/base");
+			shader.link();
+		}
+		{
+			vertexArray = new VertexArray();
+//			final float[] bigTri = {
+//					+0.0F, +1.0F,    // Top coordinate
+//					-1.0F, -1.0F,    // Bottom-left coordinate
+//					+1.0F, -1.0F,    // Bottom-right coordinate
+//			};
+//			final float[] smallTri = {
+//					+0.0F, +0.8F,    // Top coordinate
+//					-0.8F, -0.8F,    // Bottom-left coordinate
+//					+0.8F, -0.8F,    // Bottom-right coordinate
+//			};
+			final float[] smallQuad = {
+					-0.5F, -0.5F,    // Bottom-left coordinate
+					-0.5F, +0.5F,    // Top-left coordinate
+					+0.5F, +0.5F,    // Top-right coordinate
+					+0.5F, -0.5F,    // Bottom-right coordinate
+			};
+//			vertexArray.addVertexBuffer(new VertexBuffer(bigTri, GL_TRIANGLES, 3));
+//			vertexArray.addVertexBuffer(new VertexBuffer(smallTri, GL_TRIANGLES, 3));
+			vertexArray.addVertexBuffer(new VertexBuffer(smallQuad, GL_TRIANGLES, 4));
+		}
+	}
 
 	/**
 	 * Called from Main.main(String... args)
 	 */
 	public static void doRendering() {
+		getInstance().renderGame();
+	}
+
+	public static GameRenderer getInstance() {
+		return InstanceHolder.instance;
+	}
+
+	public static boolean isWindowOpen() {
+		return getInstance() != null && getInstance().isWindowOpen;
+	}
+
+	private void render() {
+		// Clear the screen
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		// Use our program
+		shader.bind();
+
+		// Bind the vertex array and enable our location
+		glBindVertexArray(vertexArray.getId());
+		glEnableVertexAttribArray(0);
+
+		for (final VertexBuffer vertexBuffer : vertexArray.getVertexBuffers()) {
+			// Draw the data
+			glDrawArrays(vertexBuffer.getMode(), 0, vertexBuffer.getCount());
+		}
+
+		// Disable our location
+		glDisableVertexAttribArray(0);
+		glBindVertexArray(0);
+
+		// Un-bind our program
+		ShaderProgram.unbind();
+	}
+
+	public void renderGame() {
 		try {
-			init(800, 400, "Title Here");
-			loop();
+			while (!window.shouldClose()) {
+				window.preRender();
+				render();
+				window.postRender();
+			}
+		} catch (Throwable t) {
+			handleException(t);
+		}
+		try {
+			dispose();
 		} catch (Throwable t) {
 			handleException(t);
 		}
 	}
 
-	private static void init(final int width, final int height, final String title) {
-
-		// Setup an error callback.
-		GLFWErrorCallback.create((error, description) -> handleException("GLFW Error! Code: " + error + ", Description: " + description))
-				.set();
-
-		// Initialize GLFW. Most GLFW functions will not work before doing this.
-		if (!GLFW.glfwInit()) {
-			handleException("GLFW wasn't initialised");
-			return;
-		}
-
-		// Configure GLFW
-		glfwDefaultWindowHints(); // optional, the current window hints are already the default
-		glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE); // the window will stay hidden after creation
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE); // the window will be resizable
-
-		// Create the window
-		windowHandle = GLFW.glfwCreateWindow(width, height, title, NULL, NULL);
-		if (windowHandle == NULL) {
-			handleException("Window couldn't be created");
-			return;
-		}
-
-		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
-		glfwSetKeyCallback(windowHandle, (window, key, scanCode, action, mods) -> {
-			if (key == GLFW_KEY_ESCAPE && action == GLFW_RELEASE)
-				glfwSetWindowShouldClose(window, true); // We will detect this in the rendering loop
-		});
-
-		// Centre the window
-		GLFWVidMode videoMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-		if (videoMode == null) {
-			handleException("Video Mode is null");
-			return;
-		}
-		GLFW.glfwSetWindowPos(windowHandle, (videoMode.width() - width) / 2, (videoMode.height() - height) / 2);
-
-		// Make the window visible
-		GLFW.glfwShowWindow(windowHandle);
-
-		// Make the OpenGL context current
-		glfwMakeContextCurrent(windowHandle);
-		// Enable v-sync
-		GLFW.glfwSwapInterval(1);
-
-		// This line is critical for LWJGL's interoperation with GLFW's
-		// OpenGL context, or any context that is managed externally.
-		// LWJGL detects the context that is current in the current thread,
-		// creates the GLCapabilities instance and makes the OpenGL
-		// bindings available for use.
-		GL.createCapabilities();
-
-		//Makes 3D drawing work when something is in front of something else
-		glEnable(GL_DEPTH_TEST);
-
-		// Set the clear color
-		glClearColor(1.0F, 0.0F, 0.0F, 0.0F);
-
-		created = true;
+	private void dispose() {
+		isWindowOpen = false;
+		// Dispose the program
+		shader.dispose();
+		// Destroy the window
+		window.dispose();
+		glfwTerminate();
 	}
 
-	private static void loop() {
-		while (!GLFW.glfwWindowShouldClose(windowHandle)) {
-			update();
-		}
-	}
+	private static class InstanceHolder {
 
-	private static void update() {
-		// Clear the framebuffer (from last draw)
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		private static final GameRenderer instance = new GameRenderer();
 
-		render();
-
-		// Swap the color buffers
-		glfwSwapBuffers(windowHandle);
-
-		// Poll for window events.
-		// The key callback will only be invoked during this call.
-		glfwPollEvents();
-	}
-
-	private static void render() {
-		glMatrixMode(GL_MODELVIEW); //Switch to the drawing perspective
-		glLoadIdentity(); //Reset the drawing perspective
-
-		glBegin(GL_QUADS); //Begin quadrilateral coordinates
-
-		//Trapezoid
-		glVertex3f(-0.7f, -1.5f, -5.0f);
-		glVertex3f(0.7f, -1.5f, -5.0f);
-		glVertex3f(0.4f, -0.5f, -5.0f);
-		glVertex3f(-0.4f, -0.5f, -5.0f);
-
-		glEnd(); //End quadrilateral coordinates
-
-		glBegin(GL_TRIANGLES); //Begin triangle coordinates
-
-//		//Pentagon
-//		glVertex3f(0.5f, 0.5f, -5.0f);
-//		glVertex3f(1.5f, 0.5f, -5.0f);
-//		glVertex3f(0.5f, 1.0f, -5.0f);
-//
-//		glVertex3f(0.5f, 1.0f, -5.0f);
-//		glVertex3f(1.5f, 0.5f, -5.0f);
-//		glVertex3f(1.5f, 1.0f, -5.0f);
-//
-//		glVertex3f(0.5f, 1.0f, -5.0f);
-//		glVertex3f(1.5f, 1.0f, -5.0f);
-//		glVertex3f(1.0f, 1.5f, -5.0f);
-
-		//Triangle
-		glVertex3f(-0.5f, 0.5f, -5.0f);
-		glVertex3f(-1.0f, 1.5f, -5.0f);
-		glVertex3f(-1.5f, 0.5f, -5.0f);
-
-		glEnd(); //End triangle coordinates
-	}
-
-	public static boolean isCreated() {
-		return created;
 	}
 
 }

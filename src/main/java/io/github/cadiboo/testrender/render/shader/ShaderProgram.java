@@ -1,6 +1,7 @@
-package io.github.cadiboo.testgame.client.idk;
+package io.github.cadiboo.testrender.render.shader;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import static org.lwjgl.opengl.GL20.GL_COMPILE_STATUS;
@@ -22,6 +23,7 @@ import static org.lwjgl.opengl.GL20.glGetShaderi;
 import static org.lwjgl.opengl.GL20.glLinkProgram;
 import static org.lwjgl.opengl.GL20.glShaderSource;
 import static org.lwjgl.opengl.GL20.glUseProgram;
+import static org.lwjgl.opengl.GL32.GL_GEOMETRY_SHADER;
 
 /**
  * ShaderProgram Class. Used to load and use Vertex and Fragment shaders easily.
@@ -31,12 +33,11 @@ import static org.lwjgl.opengl.GL20.glUseProgram;
 public class ShaderProgram {
 
 	// ProgramID
-	final int programID;
+	private final int programID;
 
-	// Vertex Shader ID
-	int vertexShaderID;
-	// Fragment Shader ID
-	int fragmentShaderID;
+	private int vertexShaderID = -1;
+	private int geometryShaderID = -1;
+	private int fragmentShaderID = -1;
 
 	/**
 	 * Create a new ShaderProgram.
@@ -55,74 +56,72 @@ public class ShaderProgram {
 	public static String readFromFile(String name) {
 		StringBuilder source = new StringBuilder();
 		try {
-			try (BufferedReader reader = new BufferedReader(
-					new InputStreamReader(
-							ShaderProgram.class
-									.getClassLoader()
-									.getResourceAsStream(name)))) {
-
+			final InputStream resourceAsStream = ShaderProgram.class.getClassLoader().getResourceAsStream(name);
+			if (resourceAsStream == null)
+				throw new RuntimeException("Error loading source code: " + name + ". File does not exist!");
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(resourceAsStream))) {
 				String line;
 				while ((line = reader.readLine()) != null) {
 					source.append(line).append("\n");
 				}
-
 			}
 		} catch (Exception e) {
-			System.err.println("Error loading source code: " + name);
-			e.printStackTrace();
+			throw new RuntimeException("Error loading source code: " + name, e);
 		}
-
 		return source.toString();
 	}
 
 	/**
 	 * Attach a Vertex Shader to this program.
 	 *
-	 * @param name The file modId of the vertex shader.
+	 * @param name The file name of the vertex shader.
 	 */
-	public void attachVertexShader(String name) {
+	public void attachVertexShader(final String name) {
+		if (vertexShaderID != -1)
+			throw new IllegalStateException("Already have a fragment shader");
+		vertexShaderID = attachShader(name + ".vsh", GL_VERTEX_SHADER, "Error creating vertex shader\n");
+	}
+
+	/**
+	 * Attach a Geometry Shader to this program.
+	 *
+	 * @param name The file name of the vertex shader.
+	 */
+	public void attachGeometryShader(final String name) {
+		if (geometryShaderID != -1)
+			throw new IllegalStateException("Already have a geometry shader");
+		geometryShaderID = attachShader(name + ".gsh", GL_GEOMETRY_SHADER, "Error creating geometry shader\n");
+	}
+
+	private int attachShader(final String name, final int type, final String errorMessage) {
 		// Load the source
 		String vertexShaderSource = readFromFile(name);
 
 		// Create the shader and set the source
-		vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertexShaderID, vertexShaderSource);
+		int shaderID = glCreateShader(type);
+		glShaderSource(shaderID, vertexShaderSource);
 
 		// Compile the shader
-		glCompileShader(vertexShaderID);
+		glCompileShader(shaderID);
 
 		// Check for errors
-		if (glGetShaderi(vertexShaderID, GL_COMPILE_STATUS) == GL_FALSE)
-			throw new RuntimeException("Error creating vertex shader\n"
-					+ glGetShaderInfoLog(vertexShaderID, glGetShaderi(vertexShaderID, GL_INFO_LOG_LENGTH)));
+		if (glGetShaderi(shaderID, GL_COMPILE_STATUS) == GL_FALSE)
+			throw new RuntimeException(errorMessage + glGetShaderInfoLog(shaderID, glGetShaderi(shaderID, GL_INFO_LOG_LENGTH)));
 
 		// Attach the shader
-		glAttachShader(programID, vertexShaderID);
+		glAttachShader(programID, shaderID);
+		return shaderID;
 	}
 
 	/**
 	 * Attach a Fragment Shader to this program.
 	 *
-	 * @param name The file modId of the Fragment Shader.
+	 * @param name The file name of the Fragment Shader.
 	 */
-	public void attachFragmentShader(String name) {
-		// Read the source
-		String fragmentShaderSource = readFromFile(name);
-
-		// Create the shader and set the source
-		fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragmentShaderID, fragmentShaderSource);
-
-		// Compile the shader
-		glCompileShader(fragmentShaderID);
-
-		// Check for errors
-		if (glGetShaderi(fragmentShaderID, GL_COMPILE_STATUS) == GL_FALSE)
-			throw new RuntimeException("Error creating fragment shader\n"
-					+ glGetShaderInfoLog(fragmentShaderID, glGetShaderi(fragmentShaderID, GL_INFO_LOG_LENGTH)));
-
-		// Attach the shader
-		glAttachShader(programID, fragmentShaderID);
+	public void attachFragmentShader(final String name) {
+		if (fragmentShaderID != -1)
+			throw new IllegalStateException("Already have a fragment shader");
+		fragmentShaderID = attachShader(name + ".fsh", GL_FRAGMENT_SHADER, "Error creating fragment shader\n");
 	}
 
 	/**

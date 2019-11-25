@@ -25,8 +25,6 @@ public final class Main {
 	}
 
 	private static void createWindow() {
-		final Window window = new Window(1280, 800, TestGame.DOMAIN);
-		window.create();
 	}
 
 //	private static void renderChunks(final Graphics2D g2d, final int cx, final int cy, final Map<Chunk, Integer> chunks, final int z, final boolean force) {

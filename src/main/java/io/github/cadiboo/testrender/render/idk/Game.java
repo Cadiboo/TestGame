@@ -1,4 +1,4 @@
-package io.github.cadiboo.testgame.client.idk;
+package io.github.cadiboo.testrender.render.idk;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.opengl.GL;
@@ -78,31 +78,31 @@ public class Game {
 		return windowID;
 	}
 
-	public void end() {
+	public void close() {
 		glfwSetWindowShouldClose(windowID, true);
 	}
 
-	public void windowMoved(int x, int y) {
+	public void onWindowMoved(int x, int y) {
 		System.out.println(String.format("Window moved: [%d, %d]", x, y));
 	}
 
-	public void windowResized(int width, int height) {
+	public void onWindowResized(int width, int height) {
 		System.out.println(String.format("Window resized: [%d, %d]", width, height));
 	}
 
-	public void windowClosing() {
+	public void onWindowClosing() {
 		System.out.println("Window closing");
 	}
 
-	public void windowFocusChanged(boolean focused) {
+	public void onWindowFocusChanged(boolean focused) {
 		System.out.println(String.format("Window focus changed: FOCUS = %B", focused));
 	}
 
-	public void windowIconfyChanged(boolean iconified) {
+	public void onWindowIconfyChanged(boolean iconified) {
 		System.out.println(String.format("Window iconified/restored: ICONIFIED = %B", iconified));
 	}
 
-	public void framebufferResized(int width, int height) {
+	public void onFramebufferResized(int width, int height) {
 		System.out.println(String.format("Framebuffer resized: [%d, %d]", width, height));
 	}
 
@@ -122,12 +122,12 @@ public class Game {
 		float now, delta, last = 0;
 
 		// Set the callbacks
-		glfwSetWindowPosCallback(windowID, (window, x, y) -> windowMoved(x, y));
-		glfwSetWindowSizeCallback(windowID, (window, width, height) -> windowResized(width, height));
-		glfwSetWindowCloseCallback(windowID, window -> windowClosing());
-		glfwSetWindowFocusCallback(windowID, (window, focused) -> windowFocusChanged(focused));
-		glfwSetWindowIconifyCallback(windowID, (window, iconified) -> windowIconfyChanged(iconified));
-		glfwSetFramebufferSizeCallback(windowID, (window, width, height) -> framebufferResized(width, height));
+		glfwSetWindowPosCallback(windowID, (window, x, y) -> onWindowMoved(x, y));
+		glfwSetWindowSizeCallback(windowID, (window, width, height) -> onWindowResized(width, height));
+		glfwSetWindowCloseCallback(windowID, window -> onWindowClosing());
+		glfwSetWindowFocusCallback(windowID, (window, focused) -> onWindowFocusChanged(focused));
+		glfwSetWindowIconifyCallback(windowID, (window, iconified) -> onWindowIconfyChanged(iconified));
+		glfwSetFramebufferSizeCallback(windowID, (window, width, height) -> onFramebufferResized(width, height));
 
 		// Initialize the game
 		init();

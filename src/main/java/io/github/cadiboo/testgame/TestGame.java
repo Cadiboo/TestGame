@@ -27,6 +27,7 @@ import io.github.cadiboo.testgame.util.version.Version;
 public class TestGame {
 
 	public static final EventBus EVENT_BUS = new EventBusImpl();
+	public static final String TITLE = "Test Game";
 	public static final String DOMAIN = "testgame";
 	public static final Version VERSION = Version.of("0.1.0");
 	private static TestGame instance;

@@ -1,5 +1,6 @@
-package io.github.cadiboo.testgame.client.idk;
+package io.github.cadiboo.testrender.render.idk;
 
+import io.github.cadiboo.testrender.render.shader.ShaderProgram;
 import org.lwjgl.BufferUtils;
 
 import java.nio.FloatBuffer;
@@ -41,8 +42,8 @@ public class Tutorial1 extends Game {
 		glfwSetWindowTitle(getWindowID(), "The First Triangle");
 
 		shaderProgram = new ShaderProgram();
-		shaderProgram.attachVertexShader("shaders/shader.vsh");
-		shaderProgram.attachFragmentShader("shaders/shader.fsh");
+		shaderProgram.attachVertexShader("shader/base");
+		shaderProgram.attachFragmentShader("shader/base");
 		shaderProgram.link();
 
 		// Generate and bind a Vertex Array
