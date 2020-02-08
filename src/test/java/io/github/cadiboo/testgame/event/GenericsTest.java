@@ -1,8 +1,5 @@
 package io.github.cadiboo.testgame.event;
 
-import io.github.cadiboo.testgame.event.bus.EventBus;
-import io.github.cadiboo.testgame.event.bus.EventBusImpl;
-
 import java.util.List;
 
 /**
@@ -11,7 +8,7 @@ import java.util.List;
 public class GenericsTest {
 
 	public static void main(String... args) {
-		EventBus bus = new EventBusImpl();
+		EventBus bus = EventBus.make();
 
 		bus.registerGeneric(null, GenericsTest::printEventType);
 		bus.registerGeneric(List.class, GenericsTest::printEventType);

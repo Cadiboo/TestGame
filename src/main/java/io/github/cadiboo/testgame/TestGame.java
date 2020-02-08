@@ -5,8 +5,9 @@ import io.github.cadiboo.testgame.blockentity.BlockEntityType;
 import io.github.cadiboo.testgame.capability.CapabilityType;
 import io.github.cadiboo.testgame.chunk.generator.ChunkGenerator;
 import io.github.cadiboo.testgame.entity.EntityType;
-import io.github.cadiboo.testgame.event.bus.EventBus;
-import io.github.cadiboo.testgame.event.bus.EventBusImpl;
+import io.github.cadiboo.testgame.event.EventBus;
+import io.github.cadiboo.testgame.event.EventBusImpl;
+import io.github.cadiboo.testgame.event.UnsafeEventBusImpl;
 import io.github.cadiboo.testgame.event.registry.RegistryPropertiesEvent;
 import io.github.cadiboo.testgame.fluid.Fluid;
 import io.github.cadiboo.testgame.init.BlockEntityTypes;
@@ -26,7 +27,7 @@ import io.github.cadiboo.testgame.util.version.Version;
  */
 public class TestGame {
 
-	public static final EventBus EVENT_BUS = new EventBusImpl();
+	public static final EventBus EVENT_BUS = EventBus.make();
 	public static final String TITLE = "Test Game";
 	public static final String DOMAIN = "testgame";
 	public static final Version VERSION = Version.of("0.1.0");

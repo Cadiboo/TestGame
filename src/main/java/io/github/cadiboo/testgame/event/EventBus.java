@@ -1,13 +1,22 @@
-package io.github.cadiboo.testgame.event.bus;
+package io.github.cadiboo.testgame.event;
 
-import io.github.cadiboo.testgame.event.Event;
-import io.github.cadiboo.testgame.event.GenericEvent;
 import io.github.cadiboo.testgame.event.pooled.PooledEvent;
 
 /**
  * @author Cadiboo
  */
 public interface EventBus {
+
+	static String getEventName(final Event event) {
+		String name = event.getClass().getSimpleName();
+		if (event instanceof GenericEvent)
+			name += "<" + ((GenericEvent) event).type.getSimpleName() + ">";
+		return name;
+	}
+
+	static EventBus make() {
+		return new SafeEventBusImpl();
+	}
 
 	/**
 	 * Posts an event to all listeners for that event type on the event bus

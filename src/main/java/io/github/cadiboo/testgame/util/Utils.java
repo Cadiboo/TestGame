@@ -63,4 +63,13 @@ public final class Utils {
 		return millis / 1_000;
 	}
 
+	/**
+	 * (Re)throws an exception.
+	 *
+	 * @param e The exception to throw
+	 */
+	public static void rethrowChecked(final Exception e) {
+		UnsafeHelper.getUnsafe().throwException(e);
+	}
+
 }

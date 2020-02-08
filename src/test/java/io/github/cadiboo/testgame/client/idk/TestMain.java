@@ -1,5 +1,7 @@
 package io.github.cadiboo.testgame.client.idk;
 
+import io.github.cadiboo.testrender.main.Main;
+
 /**
  * @author Cadiboo
  */

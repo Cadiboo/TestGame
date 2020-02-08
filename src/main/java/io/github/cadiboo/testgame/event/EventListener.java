@@ -1,6 +1,4 @@
-package io.github.cadiboo.testgame.event.bus;
-
-import io.github.cadiboo.testgame.event.Event;
+package io.github.cadiboo.testgame.event;
 
 /**
  * @author Cadiboo
