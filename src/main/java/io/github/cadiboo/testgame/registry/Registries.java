@@ -1,80 +1,42 @@
 package io.github.cadiboo.testgame.registry;
 
-import io.github.cadiboo.testgame.TestGame;
 import io.github.cadiboo.testgame.block.Block;
 import io.github.cadiboo.testgame.blockentity.BlockEntityType;
 import io.github.cadiboo.testgame.capability.CapabilityType;
 import io.github.cadiboo.testgame.entity.EntityType;
-import io.github.cadiboo.testgame.event.registry.CreateRegistriesEvent;
-import io.github.cadiboo.testgame.event.registry.RegistryPropertiesEvent;
 import io.github.cadiboo.testgame.fluid.Fluid;
 import io.github.cadiboo.testgame.item.Item;
-import io.github.cadiboo.testgame.loader.LoadIndex;
-import io.github.cadiboo.testgame.loader.Loader;
-import io.github.cadiboo.testgame.util.Location;
 
-import java.util.Collection;
-import java.util.LinkedHashMap;
-import java.util.function.BiConsumer;
+import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * @author Cadiboo
  */
-public class Registries {
+public final class Registries {
 
-	public static final Registry<Block> BLOCKS;
-	public static final Registry<Item> ITEMS;
-	public static final Registry<Fluid> FLUIDS;
-	public static final Registry<BlockEntityType> BLOCK_ENTITY_TYPES;
-	public static final Registry<EntityType> ENTITY_TYPES;
-	public static final Registry<CapabilityType> CAPABILITY_TYPES;
+	// Java 13
+//	public static final Registry<Registry<?>> REGISTRIES = register(new Registry<>("registries") {});
+//	public static final Registry<Block> BLOCKS = register(new Registry<>("blocks") {});
+//	public static final Registry<Item> ITEMS = register(new Registry<>("items") {});
+//	public static final Registry<Fluid> FLUIDS = register(new Registry<>("fluids") {});
+//	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPES = register(new Registry<>("block_entity_types") {});
+//	public static final Registry<EntityType<?>> ENTITY_TYPES = register(new Registry<>("entity_types") {});
+//	public static final Registry<CapabilityType<?>> CAPABILITY_TYPES = register(new Registry<>("capability_types") {});
 
-//	public static final Registry<Biome> BIOMES;
-//	public static final Registry<Dimension> DIMENSIONS;
+	public static final Registry<Registry<?>> REGISTRIES = new Registry<Registry<?>>("registries") {};
+	public static final Registry<Block> BLOCKS = register(new Registry<Block>("blocks") {});
+	public static final Registry<Item> ITEMS = register(new Registry<Item>("items") {});
+	public static final Registry<Fluid> FLUIDS = register(new Registry<Fluid>("fluids") {});
+	public static final Registry<BlockEntityType<?>> BLOCK_ENTITY_TYPES = register(new Registry<BlockEntityType<?>>("block_entity_types") {});
+	public static final Registry<EntityType<?>> ENTITY_TYPES = register(new Registry<EntityType<?>>("entity_types") {});
+	public static final Registry<CapabilityType<?>> CAPABILITY_TYPES = register(new Registry<CapabilityType<?>>("capability_types") {});
 
-	private static final LinkedHashMap<Location, Registry<?>> REGISTRY_LIST;
-
-	static {
-
-		if (!Loader.canLoad(LoadIndex.CREATE_REGISTRIES))
-			throw new IllegalStateException("Tried to load registries too early");
-
-		REGISTRY_LIST = new LinkedHashMap<>();
-
-		final RegistryProperties properties = getRegistryProperties();
-
-		BLOCKS = createRegistry(Location.of("block"), properties, Block.class);
-		ITEMS = createRegistry(Location.of("item"), properties, Item.class);
-		FLUIDS = createRegistry(Location.of("fluid"), properties, Fluid.class);
-		BLOCK_ENTITY_TYPES = createRegistry(Location.of("block_entity_type"), properties, BlockEntityType.class);
-		ENTITY_TYPES = createRegistry(Location.of("entity_type"), properties, EntityType.class);
-		CAPABILITY_TYPES = createRegistry(Location.of("capability_type"), properties, CapabilityType.class);
-
-		TestGame.EVENT_BUS.post(new CreateRegistriesEvent(properties));
-	}
-
-	private static RegistryProperties getRegistryProperties() {
-		final RegistryProperties properties = new RegistryProperties();
-		TestGame.EVENT_BUS.post(new RegistryPropertiesEvent(properties));
-		return properties;
-	}
-
-	private static <T extends RegistryEntry> Registry<T> createRegistry(final Location location, final RegistryProperties properties, final Class<T> type) {
-		final Registry<T> registry = new Registry<>(location, properties.supportsReplacement, properties.reloadable, type);
-		REGISTRY_LIST.put(location, registry);
+	private static <T extends Registry<?>> T register(T registry) {
+		if (registry == REGISTRIES)
+			throw new IllegalStateException();
+		REGISTRIES.register(registry.getRegistryName(), registry);
 		return registry;
-	}
-
-	public static Registry<?> get(Location name) {
-		return REGISTRY_LIST.get(name);
-	}
-
-	public static void forEach(BiConsumer<Location, Registry<?>> action) {
-		REGISTRY_LIST.forEach(action);
-	}
-
-	public static Collection<Registry<?>> values() {
-		return REGISTRY_LIST.values();
 	}
 
 }

@@ -7,7 +7,7 @@ import io.github.cadiboo.testgame.registry.RegistryEntry;
 /**
  * @author Cadiboo
  */
-public class RegistryLoadedEvent<T extends RegistryEntry> extends GenericEvent<T> {
+public class RegistryLoadedEvent<T extends RegistryEntry<T>> extends GenericEvent<T> {
 
 	private final Registry<T> registry;
 

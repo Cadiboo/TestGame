@@ -1,44 +1,34 @@
 package io.github.cadiboo.testgame.init;
 
+import io.github.cadiboo.testgame.TestGame;
+import io.github.cadiboo.testgame.block.AirBlock;
 import io.github.cadiboo.testgame.block.Block;
 import io.github.cadiboo.testgame.block.BlockProperties;
 import io.github.cadiboo.testgame.block.DirtBlock;
 import io.github.cadiboo.testgame.block.TurfBlock;
-import io.github.cadiboo.testgame.event.registry.RegisterEvent;
-import io.github.cadiboo.testgame.registry.supplier.BlockSupplier;
-import io.github.cadiboo.testgame.util.Location;
+import io.github.cadiboo.testgame.loading.Touch;
+import io.github.cadiboo.testgame.registry.RegistrationHelper;
+import io.github.cadiboo.testgame.registry.Registries;
+import io.github.cadiboo.testgame.registry.RegistryObject;
 
 /**
  * @author Cadiboo
  */
+@Touch
 public final class Blocks {
 
-	public static final BlockSupplier<Block> AIR = BlockSupplier.of(Location.of("air"));
-	public static final BlockSupplier<Block> STONE = BlockSupplier.of(Location.of("stone"));
-	public static final BlockSupplier<Block> DIRT = BlockSupplier.of(Location.of("dirt"));
-	public static final BlockSupplier<Block> TURF = BlockSupplier.of(Location.of("turf"));
-	public static final BlockSupplier<Block> GRASS = BlockSupplier.of(Location.of("grass"));
-	public static final BlockSupplier<Block> COAL_ORE = BlockSupplier.of(Location.of("coal_ore"));
-	public static final BlockSupplier<Block> IRON_ORE = BlockSupplier.of(Location.of("iron_ore"));
-	public static final BlockSupplier<Block> GOLD_ORE = BlockSupplier.of(Location.of("gold_ore"));
-	public static final BlockSupplier<Block> DIAMOND_ORE = BlockSupplier.of(Location.of("diamond_ore"));
-	public static final BlockSupplier<Block> EMERALD_ORE = BlockSupplier.of(Location.of("emerald_ore"));
-	public static final BlockSupplier<Block> REDSTONE_ORE = BlockSupplier.of(Location.of("redstone_ore"));
+	private static final RegistrationHelper<Block> BLOCKS = RegistrationHelper.of(TestGame.NAMESPACE, Registries.BLOCKS);
 
-	public static void register(final RegisterEvent<Block> event) {
-		event.getRegistry().registerAll(
-				new Block(AIR.registryName, new BlockProperties()),
-				new Block(STONE.registryName, new BlockProperties()),
-				new DirtBlock(DIRT.registryName, new BlockProperties()),
-				new TurfBlock(TURF.registryName, new BlockProperties()),
-				new Block(GRASS.registryName, new BlockProperties()),
-				new Block(COAL_ORE.registryName, new BlockProperties()),
-				new Block(IRON_ORE.registryName, new BlockProperties()),
-				new Block(GOLD_ORE.registryName, new BlockProperties()),
-				new Block(DIAMOND_ORE.registryName, new BlockProperties()),
-				new Block(EMERALD_ORE.registryName, new BlockProperties()),
-				new Block(REDSTONE_ORE.registryName, new BlockProperties())
-		);
-	}
+	public static final RegistryObject<AirBlock> AIR = BLOCKS.register("air", $ -> new AirBlock($, new BlockProperties()));
+	public static final RegistryObject<Block> STONE = BLOCKS.register("stone", $ -> new Block($, new BlockProperties()));
+	public static final RegistryObject<DirtBlock> DIRT = BLOCKS.register("dirt", $ -> new DirtBlock($, new BlockProperties()));
+	public static final RegistryObject<TurfBlock> TURF = BLOCKS.register("turf", $ -> new TurfBlock($, new BlockProperties()));
+	public static final RegistryObject<Block> GRASS = BLOCKS.register("grass", $ -> new Block($, new BlockProperties()));
+	public static final RegistryObject<Block> COAL_ORE = BLOCKS.register("coal_ore", $ -> new Block($, new BlockProperties()));
+	public static final RegistryObject<Block> IRON_ORE = BLOCKS.register("iron_ore", $ -> new Block($, new BlockProperties()));
+	public static final RegistryObject<Block> GOLD_ORE = BLOCKS.register("gold_ore", $ -> new Block($, new BlockProperties()));
+	public static final RegistryObject<Block> DIAMOND_ORE = BLOCKS.register("diamond_ore", $ -> new Block($, new BlockProperties()));
+	public static final RegistryObject<Block> EMERALD_ORE = BLOCKS.register("emerald_ore", $ -> new Block($, new BlockProperties()));
+	public static final RegistryObject<Block> REDSTONE_ORE = BLOCKS.register("redstone_ore", $ -> new Block($, new BlockProperties()));
 
 }

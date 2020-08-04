@@ -3,8 +3,6 @@ package io.github.cadiboo.testgame.event;
 import io.github.cadiboo.testgame.TestGame;
 import io.github.cadiboo.testgame.util.Utils;
 
-import java.util.Arrays;
-
 import static io.github.cadiboo.testgame.util.TypeResolver.resolveRawArgument;
 
 /**
@@ -12,7 +10,7 @@ import static io.github.cadiboo.testgame.util.TypeResolver.resolveRawArgument;
  */
 public abstract class EventBusImpl implements EventBus {
 
-	private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty(TestGame.DOMAIN + ".debug.events"));
+	private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty(TestGame.NAMESPACE + ".debug.events"));
 
 	@SuppressWarnings("unchecked")
 	protected static <T extends Event> Class<T> getEventClass(final EventListener<T> listener) {

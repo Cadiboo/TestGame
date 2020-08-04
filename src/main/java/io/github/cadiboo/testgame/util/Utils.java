@@ -4,16 +4,20 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
+import java.util.function.BooleanSupplier;
 
 /**
  * @author Cadiboo
  */
 public final class Utils {
 
+	public static final BooleanSupplier ALWAYS_TRUE = () -> true;
+
 	/**
 	 * @param input Some text containing newlines.
 	 * @return Input split by newline.
 	 */
+	@Deprecated
 	public static String[] splitNewline(String input) {
 		return input.split("\\r\\n|\\n");
 	}

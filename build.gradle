@@ -8,6 +8,9 @@ version = "0.0.0"
 group = "io.github.cadiboo.testgame"
 archivesBaseName = "TestGame"
 
+// https://stackoverflow.com/questions/16654951/gradle-sourcecompatibility-vs-targetcompatibility
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+
 project.ext.lwjglVersion = "3.2.3"
 project.ext.lwjglNatives = "natives-macos"
 
@@ -19,6 +22,8 @@ dependencies {
 	compile "org.ow2.asm:asm:7.2"
 	compile "org.ow2.asm:asm-tree:7.2"
 	compile "org.ow2.asm:asm-util:7.2"
+	compile 'com.electronwill.night-config:core:3.6.2'
+	compile 'com.electronwill.night-config:toml:3.6.2'
 	
 	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 

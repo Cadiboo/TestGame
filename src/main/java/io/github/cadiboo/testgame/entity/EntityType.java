@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 /**
  * @author Cadiboo
  */
-public class EntityType<T extends Entity> extends RegistryEntry<EntityType> {
+public class EntityType<T extends Entity> extends RegistryEntry<EntityType<?>> {
 
 	private final BiFunction<World, Vec3d, T> factory;
 

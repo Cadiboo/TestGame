@@ -1,28 +1,24 @@
 package io.github.cadiboo.testgame.init;
 
-import io.github.cadiboo.testgame.event.registry.RegisterEvent;
+import io.github.cadiboo.testgame.TestGame;
 import io.github.cadiboo.testgame.fluid.Fluid;
 import io.github.cadiboo.testgame.fluid.FluidProperties;
-import io.github.cadiboo.testgame.registry.supplier.FluidSupplier;
-import io.github.cadiboo.testgame.util.Location;
+import io.github.cadiboo.testgame.loading.Touch;
+import io.github.cadiboo.testgame.registry.RegistrationHelper;
+import io.github.cadiboo.testgame.registry.Registries;
+import io.github.cadiboo.testgame.registry.RegistryObject;
 
 /**
  * @author Cadiboo
  */
+@Touch
 public final class Fluids {
 
-	public static final FluidSupplier<Fluid> AIR = FluidSupplier.of(Location.of("air"));
-	public static final FluidSupplier<Fluid> WATER = FluidSupplier.of(Location.of("water"));
-	public static final FluidSupplier<Fluid> LAVA = FluidSupplier.of(Location.of("lava"));
-	public static final FluidSupplier<Fluid> SULPHUR = FluidSupplier.of(Location.of("sulphur"));
+	private static final RegistrationHelper<Fluid> FLUIDS = RegistrationHelper.of(TestGame.NAMESPACE, Registries.FLUIDS);
 
-	public static void register(final RegisterEvent<Fluid> event) {
-		event.getRegistry().registerAll(
-				new Fluid(AIR.registryName, new FluidProperties().setMass(0).air()),
-				new Fluid(WATER.registryName, new FluidProperties().setMass(1000)),
-				new Fluid(LAVA.registryName, new FluidProperties().setMass(100_000_000)),
-				new Fluid(SULPHUR.registryName, new FluidProperties().setMass(32))
-		);
-	}
+	public static final RegistryObject<Fluid> AIR = FLUIDS.register("air", $ -> new Fluid($, new FluidProperties().setMass(0).air()));
+	public static final RegistryObject<Fluid> WATER = FLUIDS.register("water", $ -> new Fluid($, new FluidProperties().setMass(1000)));
+	public static final RegistryObject<Fluid> LAVA = FLUIDS.register("lava", $ -> new Fluid($, new FluidProperties().setMass(100_000_000)));
+	public static final RegistryObject<Fluid> SULPHUR = FLUIDS.register("sulphur", $ -> new Fluid($, new FluidProperties().setMass(32)));
 
 }

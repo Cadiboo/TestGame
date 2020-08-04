@@ -30,13 +30,17 @@ public class GameRenderer {
 	private ShaderProgram shader;
 
 	private GameRenderer() {
+		if (!"main".equals(Thread.currentThread().getName())) {
+			new IllegalStateException("Must be on main thread. Launch with -XstartOnFirstThread.").printStackTrace(System.err);
+			Runtime.getRuntime().exit(1);
+		}
 		window = new Window(800, 400, TestGame.TITLE);
 		window.init();
 		isWindowOpen = true;
 		{
 			shader = new ShaderProgram();
 			shader.attachVertexShader("shader/base");
-			shader.attachGeometryShader("shader/base");
+//			shader.attachGeometryShader("shader/base");
 			shader.attachFragmentShader("shader/base");
 			shader.link();
 		}

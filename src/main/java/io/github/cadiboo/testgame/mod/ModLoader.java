@@ -2,6 +2,7 @@ package io.github.cadiboo.testgame.mod;
 
 import io.github.cadiboo.testgame.TestGame;
 import io.github.cadiboo.testgame.api.Mod;
+import io.github.cadiboo.testgame.loading.Touch;
 import io.github.cadiboo.testgame.util.Distribution;
 import io.github.cadiboo.testgame.util.TopologicalSort;
 import io.github.cadiboo.testgame.util.TopologicalSort.Node;
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -34,8 +36,10 @@ import java.util.function.Consumer;
 public final class ModLoader {
 
 	private static final String MOD_ANNOTATION_DESC = Type.getDescriptor(Mod.class);
+	private static final String TOUCH_ANNOTATION_DESC = Type.getDescriptor(Touch.class);
 	private static final List<ModCandidate> CANDIDATES = new ArrayList<>();
 	private static final HashMap<String, ModObject> MODS = new HashMap<>();
+	private static final List<String> CLASSES_TO_TOUCH = new LinkedList<>();
 
 	public static void findAndLoadMods() {
 		findAllModCandidates();
@@ -45,10 +49,23 @@ public final class ModLoader {
 		CANDIDATES.forEach(modCandidate -> modCandidate.modInfo.computeBeforeAndAfterModIds());
 		sortMods(CANDIDATES);
 		loadMods(CANDIDATES);
+		touchClasses(CLASSES_TO_TOUCH);
+	}
+
+	private static void touchClasses(final List<String> classesToTouch) {
+		classesToTouch.parallelStream()
+			.forEach(className -> {
+				try {
+					Class.forName(className, true, Thread.currentThread().getContextClassLoader());
+					System.out.println("Touched class \"" + className + "\"");
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+			});
 	}
 
 	private static void loadMods(final List<ModCandidate> candidates) {
-		candidates.forEach(modCandidate -> {
+		candidates.parallelStream().forEach(modCandidate -> {
 			System.out.println("Loading ModCandidate " + modCandidate);
 			try {
 				final String modId = modCandidate.modInfo.modId;
@@ -134,6 +151,7 @@ public final class ModLoader {
 	// TODO:
 	private static ModInfo parseModToml(final InputStream is) {
 		final ModInfo modInfo = new ModInfo();
+//		final String[] toml = Utils.convertStreamToString(is).lines();
 		final String[] toml = Utils.splitNewline(Utils.convertStreamToString(is));
 		for (final String s : toml) {
 			if (s.startsWith("modId")) {
@@ -224,10 +242,11 @@ public final class ModLoader {
 			return;
 
 		for (AnnotationNode annotationNode : classNode.visibleAnnotations) {
-			if (!annotationNode.desc.equals(MOD_ANNOTATION_DESC))
-				continue;
-			parseModClass(classNode, annotationNode, modClasses);
-			break;
+			if (annotationNode.desc.equals(MOD_ANNOTATION_DESC)) {
+				parseModClass(classNode, annotationNode, modClasses);
+				break;
+			} else if (annotationNode.desc.equals(TOUCH_ANNOTATION_DESC))
+				CLASSES_TO_TOUCH.add(classNode.name.replace('/', '.'));
 		}
 	}
 

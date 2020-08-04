@@ -1,21 +1,21 @@
 package io.github.cadiboo.testgame.item;
 
 import io.github.cadiboo.testgame.block.Block;
-import io.github.cadiboo.testgame.registry.supplier.BlockSupplier;
+import io.github.cadiboo.testgame.registry.RegistryObject;
 
 /**
  * @author Cadiboo
  */
 public class BlockItem<T extends Block> extends Item {
 
-	private final BlockSupplier block;
+	private final RegistryObject<T> block;
 
-	public BlockItem(final BlockSupplier block, final ItemProperties properties) {
-		super(block.registryName, properties);
+	public BlockItem(final RegistryObject<T> block, final ItemProperties properties) {
+		super(block.getRegistryName(), properties);
 		this.block = block;
 	}
 
-	public BlockSupplier getBlock() {
+	public RegistryObject<T> getBlock() {
 		return block;
 	}
 

@@ -5,7 +5,7 @@ import io.github.cadiboo.testgame.client.event.color.FluidColorEvent;
 import io.github.cadiboo.testgame.fluid.Fluid;
 import io.github.cadiboo.testgame.init.Fluids;
 import io.github.cadiboo.testgame.registry.Registries;
-import io.github.cadiboo.testgame.registry.supplier.FluidSupplier;
+import io.github.cadiboo.testgame.registry.RegistryObject;
 
 import java.util.Arrays;
 
@@ -29,11 +29,11 @@ public final class FluidColorHandler {
 		addColor(Fluids.SULPHUR, 255, 0xFF, 0, 127);
 	}
 
-	public static void addColor(FluidSupplier supplier, int r, int g, int b) {
+	public static void addColor(RegistryObject<? extends Fluid> supplier, int r, int g, int b) {
 		addColor(supplier, 0xFF, r, g, b);
 	}
 
-	public static void addColor(FluidSupplier supplier, int a, int r, int g, int b) {
+	public static void addColor(RegistryObject<? extends Fluid> supplier, int a, int r, int g, int b) {
 		a = a & 0xFF;
 		r = r & 0xFF;
 		g = g & 0xFF;
@@ -42,7 +42,7 @@ public final class FluidColorHandler {
 				a << 24 | r << 16 | g << 8 | b);
 	}
 
-	public static void addColor(FluidSupplier supplier, int color) {
+	public static void addColor(RegistryObject<? extends Fluid> supplier, int color) {
 		colors[supplier.get().getId()] = color;
 	}
 

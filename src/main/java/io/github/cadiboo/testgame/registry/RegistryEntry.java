@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * @author Cadiboo
  */
-public class RegistryEntry<T extends RegistryEntry> {
+public class RegistryEntry<T extends RegistryEntry<T>> {
 
 	private final Location registryName;
 	private char id;
@@ -25,9 +25,9 @@ public class RegistryEntry<T extends RegistryEntry> {
 	}
 
 	void setId(final int id) {
-		if (id > Registry.MAX_ID)
-			throw new IllegalArgumentException("Exceeded max ID! Max: " + (int) Registry.MAX_ID + ", requested: " + id);
-		this.id = (char) id;
+//		if (id > Registry.MAX_ID)
+//			throw new IllegalArgumentException("Exceeded max ID! Max: " + (int) Registry.MAX_ID + ", requested: " + id);
+//		this.id = (char) id;
 	}
 
 	@Override

@@ -90,4 +90,13 @@ public class LoadPhase {
 
 	}
 
+	@Override
+	public String toString() {
+		return "LoadPhase{" +
+			"name='" + name + '\'' +
+			", runBefore=" + Arrays.toString(runBefore) +
+			", runAfter=" + Arrays.toString(runAfter) +
+			'}';
+	}
+
 }

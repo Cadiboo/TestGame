@@ -10,7 +10,7 @@ import java.util.function.BiFunction;
 /**
  * @author Cadiboo
  */
-public class BlockEntityType<T extends BlockEntity> extends RegistryEntry<BlockEntityType> {
+public class BlockEntityType<T extends BlockEntity> extends RegistryEntry<BlockEntityType<?>> {
 
 	private final BiFunction<World, Pos, T> factory;
 

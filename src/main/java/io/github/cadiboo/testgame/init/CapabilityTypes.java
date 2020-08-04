@@ -1,29 +1,26 @@
 package io.github.cadiboo.testgame.init;
 
+import io.github.cadiboo.testgame.TestGame;
 import io.github.cadiboo.testgame.capability.CapabilityType;
 import io.github.cadiboo.testgame.energy.EnergyStorage;
-import io.github.cadiboo.testgame.event.registry.RegisterEvent;
 import io.github.cadiboo.testgame.heat.HeatLevel;
 import io.github.cadiboo.testgame.inventory.Inventory;
 import io.github.cadiboo.testgame.item.ItemStack;
-import io.github.cadiboo.testgame.registry.supplier.CapabilityTypeSupplier;
-import io.github.cadiboo.testgame.util.Location;
+import io.github.cadiboo.testgame.loading.Touch;
+import io.github.cadiboo.testgame.registry.RegistrationHelper;
+import io.github.cadiboo.testgame.registry.Registries;
+import io.github.cadiboo.testgame.registry.RegistryObject;
 
 /**
  * @author Cadiboo
  */
+@Touch
 public final class CapabilityTypes {
 
-	public static final CapabilityTypeSupplier<CapabilityType<Inventory>> INVENTORY = CapabilityTypeSupplier.of(Location.of("inventory"));
-	public static final CapabilityTypeSupplier<CapabilityType<EnergyStorage>> ENERGY_STORAGE = CapabilityTypeSupplier.of(Location.of("energy_storage"));
-	public static final CapabilityTypeSupplier<CapabilityType<HeatLevel>> HEAT_LEVEL = CapabilityTypeSupplier.of(Location.of("heat_level"));
+	private static final RegistrationHelper<CapabilityType<?>> CAPABILITY_TYPES = RegistrationHelper.of(TestGame.NAMESPACE, Registries.CAPABILITY_TYPES);
 
-	public static void register(RegisterEvent<CapabilityType> event) {
-		event.getRegistry().registerAll(
-				new CapabilityType<>(INVENTORY.registryName, () -> new Inventory(new ItemStack[0])),
-				new CapabilityType<>(ENERGY_STORAGE.registryName, () -> new EnergyStorage(0)),
-				new CapabilityType<>(HEAT_LEVEL.registryName, () -> new HeatLevel(0))
-		);
-	}
+	public static final RegistryObject<CapabilityType<Inventory>> INVENTORY = CAPABILITY_TYPES.register("inventory", $ -> new CapabilityType<>($, () -> new Inventory(new ItemStack[0])));
+	public static final RegistryObject<CapabilityType<EnergyStorage>> ENERGY_STORAGE = CAPABILITY_TYPES.register("energy_storage", $ -> new CapabilityType<>($, () -> new EnergyStorage(0)));
+	public static final RegistryObject<CapabilityType<HeatLevel>> HEAT_LEVEL = CAPABILITY_TYPES.register("heat_level", $ -> new CapabilityType<>($, () -> new HeatLevel(0)));
 
 }

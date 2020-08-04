@@ -29,7 +29,7 @@ public class ClientGame extends TestGame {
 				.build()
 		);
 		Loader.add(new LoadPhase.Builder("reload_registries_10")
-				.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+				.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
 				.runAfter("reload_registries_9")
 				.runBefore("init_block_colors")
 				.runBefore("init_fluid_colors")

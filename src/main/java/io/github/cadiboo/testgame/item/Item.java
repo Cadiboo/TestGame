@@ -3,7 +3,7 @@ package io.github.cadiboo.testgame.item;
 import io.github.cadiboo.testgame.block.Block;
 import io.github.cadiboo.testgame.init.Blocks;
 import io.github.cadiboo.testgame.registry.RegistryEntry;
-import io.github.cadiboo.testgame.registry.supplier.BlockSupplier;
+import io.github.cadiboo.testgame.registry.RegistryObject;
 import io.github.cadiboo.testgame.util.Location;
 
 import java.util.HashMap;
@@ -29,12 +29,6 @@ public class Item extends RegistryEntry<Item> {
 	@SuppressWarnings("unchecked")
 	public <T> T getData(final String key) {
 		return extraData == null ? null : (T) extraData.get(key);
-	}
-
-	public Block asBlock() {
-		if (!(this instanceof BlockItem))
-			return Blocks.AIR.get();
-		return ((BlockSupplier<?>) ((BlockItem) this).getBlock()).get();
 	}
 
 }

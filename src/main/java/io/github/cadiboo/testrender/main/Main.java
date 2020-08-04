@@ -1,5 +1,6 @@
 package io.github.cadiboo.testrender.main;
 
+import io.github.cadiboo.testgame.client.ClientGame;
 import io.github.cadiboo.testrender.render.GameRenderer;
 
 /**
@@ -23,7 +24,7 @@ public final class Main {
 	}
 
 	private static void runGame() {
-
+		new ClientGame();
 	}
 
 	public static void handleException(final String errorMessage) {

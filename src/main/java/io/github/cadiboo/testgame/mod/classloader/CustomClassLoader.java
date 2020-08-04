@@ -8,7 +8,7 @@ import java.io.InputStream;
 public class CustomClassLoader extends ClassLoader {
 
 	@Override
-	public Class findClass(String name) {
+	public Class<?> findClass(String name) {
 		byte[] b = loadClassFromFile(name);
 		return defineClass(name, b);
 	}

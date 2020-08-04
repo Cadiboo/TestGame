@@ -19,78 +19,72 @@ public interface LoadIndex {
 
 	LoadPhase LOAD_MODS = add(new LoadPhase.Builder("load_mods")
 			.onRun(ModLoader::findAndLoadMods)
-			.runBefore("create_registries")
-			.build()
-	);
-
-	LoadPhase CREATE_REGISTRIES = add(new LoadPhase.Builder("create_registries")
-			.onRun(() -> Registries.get(null))
 			.runBefore("register_registry_entries")
 			.build()
 	);
 
 	LoadPhase REGISTER_REGISTRY_ENTRIES = add(new LoadPhase.Builder("register_registry_entries")
-			.onRun(() -> Registries.forEach((location, registry) -> registry.load()))
-			.runAfter("create_registries")
+			.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
+			.runAfter("load_mods")
 			.build()
 	);
 
 	LoadPhase RELOAD_REGISTRIES_0 = add(new LoadPhase.Builder("reload_registries_0")
-			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+		.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
 			.runAfter("register_registry_entries")
 			.build()
 	);
 
 	LoadPhase RELOAD_REGISTRIES_1 = add(new LoadPhase.Builder("reload_registries_1")
-			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
 			.runAfter("reload_registries_0")
 			.build()
 	);
 
 	LoadPhase RELOAD_REGISTRIES_2 = add(new LoadPhase.Builder("reload_registries_2")
-			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
 			.runAfter("reload_registries_1")
 			.build()
 	);
 
 	LoadPhase RELOAD_REGISTRIES_3 = add(new LoadPhase.Builder("reload_registries_3")
-			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
 			.runAfter("reload_registries_2")
 			.build()
 	);
 
 	LoadPhase RELOAD_REGISTRIES_4 = add(new LoadPhase.Builder("reload_registries_4")
-			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
 			.runAfter("reload_registries_3")
 			.build()
 	);
 
 	LoadPhase RELOAD_REGISTRIES_5 = add(new LoadPhase.Builder("reload_registries_5")
-			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
 			.runAfter("reload_registries_4")
 			.build()
 	);
 
 	LoadPhase RELOAD_REGISTRIES_6 = add(new LoadPhase.Builder("reload_registries_6")
-			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
 			.runAfter("reload_registries_5")
 			.build()
 	);
 
 	LoadPhase RELOAD_REGISTRIES_7 = add(new LoadPhase.Builder("reload_registries_7")
-			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
 			.runAfter("reload_registries_6")
 			.build()
 	);
 
 	LoadPhase RELOAD_REGISTRIES_8 = add(new LoadPhase.Builder("reload_registries_8")
-			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
 			.runAfter("reload_registries_7")
 			.build()
 	);
 
 	LoadPhase RELOAD_REGISTRIES_9 = add(new LoadPhase.Builder("reload_registries_9")
-			.onRun(() -> Registries.forEach((location, registry) -> registry.reload()))
+			.onRun(() -> Registries.REGISTRIES.forEach((location, registry) -> registry.load()))
 			.runAfter("reload_registries_8")
 			.build()
 	);

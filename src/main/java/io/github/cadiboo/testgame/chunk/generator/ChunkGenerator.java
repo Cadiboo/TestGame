@@ -6,7 +6,7 @@ import io.github.cadiboo.testgame.chunk.Chunk;
 import io.github.cadiboo.testgame.event.chunk.ChunkCreateEvent;
 import io.github.cadiboo.testgame.event.chunk.ChunkGenerateEvent;
 import io.github.cadiboo.testgame.init.Blocks;
-import io.github.cadiboo.testgame.registry.supplier.BlockSupplier;
+import io.github.cadiboo.testgame.registry.RegistryObject;
 import io.github.cadiboo.testgame.world.World;
 
 import java.util.Random;
@@ -97,9 +97,9 @@ public final class ChunkGenerator {
 
 		private final long minY;
 		private final long maxY;
-		private final BlockSupplier<?> block;
+		private final RegistryObject<? extends Block> block;
 
-		public Layer(final long minY, final long maxY, final BlockSupplier<?> block) {
+		public Layer(final long minY, final long maxY, final RegistryObject<? extends Block> block) {
 			this.minY = minY;
 			this.maxY = maxY;
 			this.block = block;
@@ -112,9 +112,9 @@ public final class ChunkGenerator {
 		private final int chance;
 		private final long minY;
 		private final long maxY;
-		private final BlockSupplier<?> block;
+		private final RegistryObject<? extends Block> block;
 
-		public Decorator(final int chance, final long minY, final long maxY, final BlockSupplier<?> block) {
+		public Decorator(final int chance, final long minY, final long maxY, final RegistryObject<? extends Block> block) {
 			this.chance = chance;
 			this.minY = minY;
 			this.maxY = maxY;

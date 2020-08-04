@@ -17,6 +17,7 @@ import static org.lwjgl.opengl.GL20.glCreateShader;
 import static org.lwjgl.opengl.GL20.glDeleteProgram;
 import static org.lwjgl.opengl.GL20.glDeleteShader;
 import static org.lwjgl.opengl.GL20.glDetachShader;
+import static org.lwjgl.opengl.GL20.glGetProgramInfoLog;
 import static org.lwjgl.opengl.GL20.glGetProgrami;
 import static org.lwjgl.opengl.GL20.glGetShaderInfoLog;
 import static org.lwjgl.opengl.GL20.glGetShaderi;
@@ -133,7 +134,7 @@ public class ShaderProgram {
 
 		// Check for linking errors
 		if (glGetProgrami(programID, GL_LINK_STATUS) == GL_FALSE)
-			throw new RuntimeException("Unable to link shader program:");
+			throw new RuntimeException("Unable to link shader program:" + glGetProgramInfoLog(programID));
 	}
 
 	/**

@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public final class Loader {
 
-	private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty(TestGame.DOMAIN + ".debug.loader"));
+	private static final boolean DEBUG = Boolean.parseBoolean(System.getProperty(TestGame.NAMESPACE + ".debug.loader"));
 	private static List<LoadPhase> phases = new ArrayList<>();
 	/**
 	 * Contains all the already loaded phases + the currently loading one

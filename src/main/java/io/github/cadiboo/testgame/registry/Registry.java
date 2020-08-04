@@ -1,100 +1,58 @@
 package io.github.cadiboo.testgame.registry;
 
 import io.github.cadiboo.testgame.TestGame;
-import io.github.cadiboo.testgame.event.registry.RegisterEvent;
 import io.github.cadiboo.testgame.event.registry.RegistryLoadedEvent;
 import io.github.cadiboo.testgame.util.Location;
+import io.github.cadiboo.testgame.util.TypeResolver;
 
-import java.util.ArrayList;
+import java.lang.reflect.Array;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * @author Cadiboo
  */
-public class Registry<T extends RegistryEntry> {
+public class Registry<T extends RegistryEntry<T>> extends RegistryEntry<Registry<?>> {
 
-	public static final char MAX_ID = Character.MAX_VALUE;
-	public final boolean supportsReplacement;
-	public final boolean reloadable;
-	public final Location registryName;
-	private final LinkedHashMap<Location, T> entries = new LinkedHashMap<>();
-	private final HashMap<Location, List<RegistrySupplier<T, ?>>> suppliers = new HashMap<>();
-	private final Class<T> type;
-	private RegistryEntry[] ids = null;
-	private boolean locked;
+	private final Map<Location, T> entries = new ConcurrentHashMap<>();
+	/**
+	 * Maps registry names to listeners that want to be notified when the object for that registry name changes.
+	 */
+	private final Map<Location, List<Consumer<T>>> entryListeners = new HashMap<>();
+	private final List<Consumer<Registry<T>>> initialisationListeners = new LinkedList<>();
+	private final Class<T> genericType = (Class<T>) TypeResolver.resolveRawArgument(Registry.class, getClass());
 
-	public Registry(final Location registryName, final boolean supportsReplacement, final boolean reloadable, final Class<T> type) {
-		this.registryName = registryName;
-		this.supportsReplacement = supportsReplacement;
-		this.reloadable = reloadable;
-		this.type = type;
+	public Registry(final Location registryName) {
+		super(registryName);
 	}
 
-	@SafeVarargs
-	public final void registerAll(final T... entries) {
-		for (final T entry : entries) {
-			register(entry);
-		}
+	Registry(final String registryName) {
+		this(Location.of(TestGame.NAMESPACE, registryName));
 	}
 
-	public void register(final T entry) {
-		if (locked)
-			throw new IllegalStateException("Registry is locked!");
-
-		if (entry == null)
-			throw new NullPointerException("entry to register cannot be null!");
-
-		if (!type.isAssignableFrom(entry.getClass()))
-			throw new IllegalStateException("I hate generics. Registry type is \"" + type.getName() + "\" but entry being registered is \"" + entry.getClass() + "\"");
-
-		final Location registryName = entry.getRegistryName();
-		if (registryName == null)
-			throw new NullPointerException("registryName of entry (\"" + entry.getClass().getName() + "\") to register cannot be null!");
-
-		final int insertId = entries.size();
-		final T oldValue = entries.put(registryName, entry);
-		if (oldValue != null)
-			if (!supportsReplacement) {
-				entries.put(registryName, oldValue);
-				throw new IllegalStateException("Registry does not support replacement");
-			} else
-				entry.setId(oldValue.getId());
-		else {
-			entry.setId(insertId);
-		}
-		final List<RegistrySupplier<T, ?>> registrySuppliers = suppliers.get(registryName);
-		if (registrySuppliers != null)
-			for (final RegistrySupplier<T, ?> supplier : registrySuppliers) {
-				supplier.cached = entry;
-			}
+	public <U extends T> void registerEntryListener(final RegistryObject<U> registryObject) {
+		entryListeners.computeIfAbsent(registryObject.getRegistryName(), k -> new LinkedList<>())
+			.add(newObject -> registryObject.value = (U) newObject);
 	}
 
-	public void reload() {
-		if (!this.reloadable)
-			throw new IllegalStateException("Reload called on a non-reloadable registry!");
-		entries.clear();
-		load();
+	public void registerInitialisationListener(final Consumer<Registry<T>> listener) {
+		initialisationListeners.add(listener);
 	}
 
-	void unlock() {
-		locked = false;
-		ids = null;
+	public <U extends T> void register(final Location registryName, final U entry) {
+		entries.put(registryName, entry);
+		entryListeners.getOrDefault(registryName, Collections.emptyList())
+			.forEach(consumer -> consumer.accept(entry));
 	}
 
-	public void lock() {
-		locked = true;
-		ids = new RegistryEntry[entries.size()];
-		int i = 0;
-		for (final T entry : entries.values()) {
-			ids[i++] = entry;
-		}
-	}
-
-	public void forEach(BiConsumer<Location, T> action) {
+	public void forEach(final BiConsumer<? super Location, ? super T> action) {
 		entries.forEach(action);
 	}
 
@@ -102,40 +60,27 @@ public class Registry<T extends RegistryEntry> {
 		return entries.values();
 	}
 
-	public T get(Location registryName) {
-		return entries.get(registryName);
-	}
-
-	@SuppressWarnings("unchecked")
-	public T get(char id) {
-		return (T) ids[id];
-	}
-
-	public boolean isLocked() {
-		return locked;
-	}
-
-	@SuppressWarnings("unchecked")
-	public void fillSuppliers() {
-		final List<RegistrySupplier> suppliersForMe = RegistrySupplier.SUPPLIERS.remove(this.registryName);
-		if (suppliersForMe == null || suppliersForMe.isEmpty()) {
-			return;
-		}
-		for (RegistrySupplier<T, ?> supplier : suppliersForMe) {
-			this.suppliers.computeIfAbsent(supplier.registryName, k -> new ArrayList<>()).add(supplier);
-		}
-	}
-
 	public void load() {
-		fillSuppliers();
-		unlock();
-		TestGame.EVENT_BUS.post(new RegisterEvent<>(this, this.type));
-		lock();
-		TestGame.EVENT_BUS.post(new RegistryLoadedEvent<>(this, this.type));
+//		unlock();
+		initialisationListeners.parallelStream().forEach(registryConsumer -> registryConsumer.accept(this));
+//		lock();
+		TestGame.EVENT_BUS.post(new RegistryLoadedEvent<>(this, this.genericType));
+	}
+
+	public T get(final char id) {
+		return (T) entries.values().toArray()[id];
+	}
+
+	public T get(final Location id) {
+		return entries.get(id);
 	}
 
 	public int size() {
 		return entries.size();
+	}
+
+	public boolean isEmpty() {
+		return entries.isEmpty();
 	}
 
 }

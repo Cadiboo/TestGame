@@ -1,28 +1,25 @@
 package io.github.cadiboo.testgame.init;
 
+import io.github.cadiboo.testgame.TestGame;
 import io.github.cadiboo.testgame.blockentity.BlockEntity;
 import io.github.cadiboo.testgame.blockentity.BlockEntityType;
 import io.github.cadiboo.testgame.blockentity.SmelterBlockEntity;
 import io.github.cadiboo.testgame.blockentity.StorageBlockEntity;
-import io.github.cadiboo.testgame.event.registry.RegisterEvent;
-import io.github.cadiboo.testgame.registry.supplier.BlockEntityTypeSupplier;
-import io.github.cadiboo.testgame.util.Location;
+import io.github.cadiboo.testgame.loading.Touch;
+import io.github.cadiboo.testgame.registry.RegistrationHelper;
+import io.github.cadiboo.testgame.registry.Registries;
+import io.github.cadiboo.testgame.registry.RegistryObject;
 
 /**
  * @author Cadiboo
  */
+@Touch
 public final class BlockEntityTypes {
 
-	public static final BlockEntityTypeSupplier<BlockEntityType<BlockEntity>> TEST_BLOCK_ENTITY = BlockEntityTypeSupplier.of(Location.of("test_block_entity"));
-	public static final BlockEntityTypeSupplier<BlockEntityType<StorageBlockEntity>> STORAGE = BlockEntityTypeSupplier.of(Location.of("storage"));
-	public static final BlockEntityTypeSupplier<BlockEntityType<SmelterBlockEntity>> SMELTER = BlockEntityTypeSupplier.of(Location.of("smelter"));
+	private static final RegistrationHelper<BlockEntityType<?>> BLOCK_ENTITY_TYPES = RegistrationHelper.of(TestGame.NAMESPACE, Registries.BLOCK_ENTITY_TYPES);
 
-	public static void register(RegisterEvent<BlockEntityType> event) {
-		event.getRegistry().registerAll(
-				new BlockEntityType<>(TEST_BLOCK_ENTITY.registryName, BlockEntity::new),
-				new BlockEntityType<>(STORAGE.registryName, StorageBlockEntity::new),
-				new BlockEntityType<>(SMELTER.registryName, SmelterBlockEntity::new)
-		);
-	}
+	public static final RegistryObject<BlockEntityType<BlockEntity>> TEST_BLOCK_ENTITY = BLOCK_ENTITY_TYPES.register("test_block_entity", $ -> new BlockEntityType<>($, BlockEntity::new));
+	public static final RegistryObject<BlockEntityType<StorageBlockEntity>> STORAGE = BLOCK_ENTITY_TYPES.register("storage", $ -> new BlockEntityType<>($, StorageBlockEntity::new));
+	public static final RegistryObject<BlockEntityType<SmelterBlockEntity>> SMELTER = BLOCK_ENTITY_TYPES.register("smelter", $ -> new BlockEntityType<>($, SmelterBlockEntity::new));
 
 }

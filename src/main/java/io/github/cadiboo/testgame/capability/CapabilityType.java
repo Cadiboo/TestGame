@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 /**
  * @author Cadiboo
  */
-public class CapabilityType<T extends Capability<T>> extends RegistryEntry<CapabilityType> {
+public class CapabilityType<T extends Capability<T>> extends RegistryEntry<CapabilityType<?>> {
 
 	private final Supplier<T> serialisationInstanceSupplier;
 	private T serialisationInstance;

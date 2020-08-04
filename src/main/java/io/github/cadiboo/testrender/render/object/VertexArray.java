@@ -1,6 +1,7 @@
 package io.github.cadiboo.testrender.render.object;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
@@ -13,7 +14,7 @@ import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 public class VertexArray {
 
 	private final int arrayId;
-	private final ArrayList<VertexBuffer> vertexBuffers = new ArrayList<>();
+	private final List<VertexBuffer> vertexBuffers = new LinkedList<>();
 
 	public VertexArray() {
 		// Generate a Vertex Array
@@ -24,7 +25,7 @@ public class VertexArray {
 		return arrayId;
 	}
 
-	public ArrayList<VertexBuffer> getVertexBuffers() {
+	public List<VertexBuffer> getVertexBuffers() {
 		return vertexBuffers;
 	}
 
