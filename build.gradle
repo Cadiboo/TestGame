@@ -1,58 +1,44 @@
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'eclipse'
-apply plugin: 'idea'
+plugins {
+	id 'java'
+	id 'application'
+	id 'eclipse'
+	id 'idea'
+}
 
 version = "0.0.0"
 group = "io.github.cadiboo.testgame"
 archivesBaseName = "TestGame"
+
+project.ext.lwjglVersion = "3.2.3"
+project.ext.lwjglNatives = "natives-macos"
 
 repositories {
 	mavenCentral()
 }
 
 dependencies {
-	compile "org.ow2.asm:asm:7.2"
-	compile "org.ow2.asm:asm-tree:7.2"
-	compile "org.ow2.asm:asm-util:7.2"
+	// https://mvnrepository.com/artifact/org.ow2.asm/asm
+	implementation group: 'org.ow2.asm', name: 'asm', version: '9.1'
+	implementation group: 'org.ow2.asm', name: 'asm-tree', version: '9.1'
+	implementation group: 'org.ow2.asm', name: 'asm-util', version: '9.1'
+
+	implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+	implementation "org.lwjgl:lwjgl"
+	implementation "org.lwjgl:lwjgl-assimp"
+	implementation "org.lwjgl:lwjgl-glfw"
+	implementation "org.lwjgl:lwjgl-openal"
+	implementation "org.lwjgl:lwjgl-stb"
+	implementation "org.lwjgl:lwjgl-vulkan"
+	runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+	runtimeOnly "org.lwjgl:lwjgl-vulkan::$lwjglNatives"
 }
 
-def commonManifest = {
-	attributes([
-			"Main-Class"              : "io.github.cadiboo.testgame.client.Main",
-			"Implementation-Title"    : "TestGame",
-			"Implementation-Version"  : "${version}",
-			"Implementation-Vendor"   : group,
-			"Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-			"Signing-Fingerprint"     : project.hasProperty('signSHA1') ? project.findProperty('signSHA1') : "unsigned",
-			"Built-With"              : "Gradle v" + project.getGradle().getGradleVersion()
-	],)
-}
-
-jar {
-	manifest commonManifest
-	classifier = 'bin'
-}
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-	classifier = 'sources'
-	manifest commonManifest
-	from sourceSets.main.allSource
-}
-build.dependsOn sourcesJar
-
-task fatJar(type: Jar, dependsOn: 'jar') {
-	inputs.file jar.archivePath
-	from(configurations.compile.collect { zipTree(it).matching { exclude 'META-INF/**' } })
-	manifest commonManifest
-	classifier = 'all'
-}
-
-fatJar.doFirst {
-	from zipTree(jar.archivePath)
-}
-
-artifacts {
-	archives sourcesJar
-	archives fatJar
+application {
+	setMainClassName('io.github.cadiboo.game.Main')
+	applicationDefaultJvmArgs = ['-XstartOnFirstThread']
 }
